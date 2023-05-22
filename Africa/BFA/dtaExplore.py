@@ -5,13 +5,14 @@ import warnings
 from os import path
 from sys import argv
 import osmnx as ox
+
 import pandas as pd
 import MGSurvE as srv
 import auxiliary as aux
 warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
 
 
-(COUNTRY, COMMUNE) = ('Burkina Faso', 'Gorom Gorom')
+(COUNTRY, CODE, COMMUNE) = ('Burkina Faso', 'BFA', 'Gorom Gorom')
 if srv.isNotebook():
     USR = 'sami'
 else:
@@ -20,11 +21,16 @@ else:
 # Read files
 ###############################################################################
 paths = aux.userPaths(USR)
+osm = path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'.osm')
 DATA = pd.read_excel(
     path.join(paths['data'], 'HumanMobility', 'HumanMobility.xlsx'),
     sheet_name=[f"{c} Coordinates" for c in ('Mali', 'Burkina Faso', 'Zambia', 'Tanzania')]
 )
 CNT = DATA[f'{COUNTRY} Coordinates']
+(BLD, NTW) = (
+    ox.geometries_from_xml(osm, tags={'building': True}),
+    ox.graph_from_xml(osm, retain_all=True)
+)
 print(list(CNT.columns))
 ###############################################################################
 # Inspect (Cercle ~ State)
