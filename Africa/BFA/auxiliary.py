@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
+(rdColor, rdAlpha, rdScale, txtColor) = (, 4.75, '#ffffff')
+
 def userPaths(user):
     if user=='sami':
         (DTA_ROOT, SIM_ROOT) = (
