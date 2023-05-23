@@ -11,7 +11,7 @@ beautifulsoup4 @ file:///home/conda/feedstock_root/build_artifacts/beautifulsoup
 bleach==6.0.0
 branca @ file:///home/conda/feedstock_root/build_artifacts/branca_1667848736831/work
 Cartopy @ file:///Users/runner/miniforge3/conda-bld/cartopy_1679098127385/work
-certifi @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_884c889c-96af-444f-bd6d-daddb5e9a462ykj3l5n_/croots/recipe/certifi_1655968814730/work/certifi
+certifi==2023.5.7
 cffi==1.15.1
 charset-normalizer @ file:///home/conda/feedstock_root/build_artifacts/charset-normalizer_1678108872112/work
 click @ file:///home/conda/feedstock_root/build_artifacts/click_1666798198223/work
@@ -30,15 +30,16 @@ engineering-notation==0.8.0
 et-xmlfile @ file:///home/conda/feedstock_root/build_artifacts/et_xmlfile_1674664118162/work
 executing==1.2.0
 fastjsonschema==2.17.1
-Fiona @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_8es3k42t83/croot/fiona_1678226043951/work
+Fiona @ file:///Users/runner/miniforge3/conda-bld/fiona_1684320641557/work
 folium @ file:///home/conda/feedstock_root/build_artifacts/folium_1670956290671/work
 fonttools @ file:///Users/runner/miniforge3/conda-bld/fonttools_1683740659111/work
 fqdn==1.5.1
-GDAL @ file:///Users/runner/miniforge3/conda-bld/gdal-split_1684601180402/work/build/swig/python
+GDAL @ file:///Users/runner/miniforge3/conda-bld/gdal-split_1684601262793/work/build/swig/python
 geojson==3.0.1
 geopandas @ file:///home/conda/feedstock_root/build_artifacts/geopandas_1683384012847/work
 haversine==2.8.0
 idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1663625384323/work
+importlib-metadata @ file:///home/conda/feedstock_root/build_artifacts/importlib-metadata_1682176699712/work
 ipykernel==6.23.1
 ipython==8.13.2
 ipython-genutils==0.2.0
@@ -75,7 +76,7 @@ nbclient==0.8.0
 nbconvert==7.4.0
 nbformat==5.8.0
 nest-asyncio==1.5.6
-networkx @ file:///opt/conda/conda-bld/networkx_1647437648384/work
+networkx @ file:///home/conda/feedstock_root/build_artifacts/networkx_1680692919326/work
 notebook==6.5.4
 notebook_shim==0.2.3
 numpy @ file:///Users/runner/miniforge3/conda-bld/numpy_1682210346059/work
@@ -111,7 +112,7 @@ PyYAML==6.0
 pyzmq==25.0.2
 qtconsole==5.4.3
 QtPy==2.3.1
-rasterio @ file:///Users/runner/miniforge3/conda-bld/rasterio_1683265655935/work
+rasterio @ file:///Users/runner/miniforge3/conda-bld/rasterio_1684815479133/work
 requests @ file:///home/conda/feedstock_root/build_artifacts/requests_1684774241324/work
 rfc3339-validator==0.1.4
 rfc3986-validator==0.1.1
@@ -131,7 +132,7 @@ threadpoolctl @ file:///home/conda/feedstock_root/build_artifacts/threadpoolctl_
 tinycss2==1.2.1
 tornado==6.3.2
 traitlets==5.9.0
-typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/typing_extensions_1678559861143/work
+typing_extensions @ file:///home/conda/feedstock_root/build_artifacts/typing_extensions_1684841349287/work
 tzdata @ file:///home/conda/feedstock_root/build_artifacts/python-tzdata_1680081134351/work
 ujson==5.7.0
 unicodedata2 @ file:///Users/runner/miniforge3/conda-bld/unicodedata2_1667239979860/work
@@ -145,3 +146,4 @@ websocket-client==1.5.2
 widgetsnbextension==4.0.7
 xarray==2023.5.0
 xyzservices @ file:///home/conda/feedstock_root/build_artifacts/xyzservices_1684571362432/work
+zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1677313463193/work

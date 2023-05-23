@@ -1,6 +1,5 @@
 name: MGSurvE_DA
 channels:
-  - anaconda
   - conda-forge
   - defaults
 dependencies:
@@ -28,6 +27,7 @@ dependencies:
   - deap
   - et_xmlfile
   - expat
+  - fiona
   - folium
   - font-ttf-dejavu-sans-mono
   - font-ttf-inconsolata
@@ -50,6 +50,7 @@ dependencies:
   - hdf5
   - icu
   - idna
+  - importlib-metadata
   - jinja2
   - joblib
   - json-c
@@ -59,6 +60,7 @@ dependencies:
   - lcms2
   - lerc
   - libaec
+  - libarchive
   - libblas
   - libbrotlicommon
   - libbrotlidec
@@ -98,6 +100,7 @@ dependencies:
   - libzlib
   - llvm-openmp
   - lz4-c
+  - lzo
   - mapclassify
   - markupsafe
   - matplotlib-base
@@ -161,6 +164,7 @@ dependencies:
   - xorg-libxdmcp
   - xyzservices
   - xz
+  - zipp
   - zlib
   - zstd
   - pip:
@@ -183,7 +187,6 @@ dependencies:
       - engineering-notation
       - executing
       - fastjsonschema
-      - fiona
       - fqdn
       - geojson
       - haversine
