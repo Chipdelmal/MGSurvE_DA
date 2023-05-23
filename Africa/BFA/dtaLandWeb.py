@@ -55,7 +55,7 @@ BLD['centroid_lat'] = [poly.centroid.y for poly in BLD['geometry']]
 ###############################################################################
 STYLE_BG = {'color': '#0b2545'}
 STYLE_TX = {'color': '#faf9f9', 'size': 20}
-STYLE_CN = {'color': '#faf9f9', 'alpha': 0.20, 'size': 30}
+STYLE_CN = {'color': '#faf9f9', 'alpha': 0.20, 'size': 25}
 STYLE_BD = {'color': '#faf9f9', 'alpha': 0.950}
 STYLE_RD = {'color': '#ede0d4', 'alpha': 0.090, 'width': 1}
 G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
@@ -77,7 +77,7 @@ else:
         color=STYLE_BD['color'], alpha=STYLE_BD['alpha']
     )
 ax.text(
-    0.95, 0.05, 
+    0.99, 0.01, 
     'Footprints: {}'.format(EngNumber(BLD.shape[0])), 
     transform=ax.transAxes, 
     horizontalalignment='right', verticalalignment='bottom', 
