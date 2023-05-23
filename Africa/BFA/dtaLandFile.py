@@ -16,11 +16,15 @@ import auxiliary as aux
 warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
 
 
-(COUNTRY, CODE, COMMUNE) = ('Burkina Faso', 'BFA', 'Gorom Gorom')
+
 if srv.isNotebook():
-    USR = 'sami'
+    (USR, COUNTRY, CODE, COMMUNE) = (
+        'sami', 
+        'Burkina Faso', 'BFA', 
+        'Fanka'
+    )
 else:
-    USR = argv[1:]
+    (USR, COUNTRY, CODE, COMMUNE) = argv[1:]
 PROJ = ccrs.PlateCarree()
 ###############################################################################
 # Read files
@@ -38,12 +42,12 @@ CNT = DATA[f'{COUNTRY} Coordinates']
 )
 BLD['centroid_x'] = [poly.centroid.x for poly in BLD['geometry']]
 BLD['centroid_y'] = [poly.centroid.y for poly in BLD['geometry']]
-print(list(CNT.columns))
+# print(list(CNT.columns))
 ###############################################################################
 # Inspect (Cercle ~ State)
 ###############################################################################
 coms = sorted(list(set(CNT['COMMUNE'])))
-CNT.sort_values(by='POPULATION', ascending=False).iloc[10]
+CNT.sort_values(by='POPULATION', ascending=False).iloc[8]
 ###############################################################################
 # Map
 ###############################################################################
