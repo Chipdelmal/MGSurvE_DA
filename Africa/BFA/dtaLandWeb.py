@@ -6,8 +6,10 @@ from os import path
 from sys import argv
 import osmnx as ox
 from shapely import wkt
+from engineering_notation import EngNumber
 import cartopy.crs as ccrs
 import cartopy.feature as cf
+import compress_pickle as pkl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -23,10 +25,12 @@ if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST) = (
         'sami',
         'Burkina Faso', 'BFA', 
-        'Ouagadougou', (12.3732634, -1.5437957), 15000
+        'Niangoloko', (10.2829, -4.9213), 5000
     )
 else:
-    USR = argv[1:]
+    (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST) = argv[1:]
+    COORDS = tuple(map(float, COORDS.split(', ')))
+    DIST = int(DIST)
 (PROJ, FOOTPRINT) = (ccrs.PlateCarree(), True)
 ###############################################################################
 # Set Paths
@@ -34,6 +38,8 @@ else:
 paths = aux.userPaths(USR)
 ###############################################################################
 # Download Data
+#   https://wiki.openstreetmap.org/wiki/Tag:place%3Dcity_block
+#   tags={'building': True}
 ###############################################################################
 BLD = ox.geometries.geometries_from_point(
     COORDS, tags={'building': True} , dist=DIST
@@ -48,9 +54,10 @@ BLD['centroid_lat'] = [poly.centroid.y for poly in BLD['geometry']]
 # Map
 ###############################################################################
 STYLE_BG = {'color': '#0b2545'}
-STYLE_CN = {'color': '#faf9f9', 'alpha': 0.20, 'size': 35}
-STYLE_BD = {'color': '#faf9f9', 'alpha': 0.80}
-STYLE_RD = {'color': '#ede0d4', 'alpha': 0.10, 'width': 1.25}
+STYLE_TX = {'color': '#faf9f9', 'size': 20}
+STYLE_CN = {'color': '#faf9f9', 'alpha': 0.20, 'size': 30}
+STYLE_BD = {'color': '#faf9f9', 'alpha': 0.950}
+STYLE_RD = {'color': '#ede0d4', 'alpha': 0.090, 'width': 1}
 G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
 (fig, ax) = ox.plot_graph(
     G, node_size=0, figsize=(40, 40), show=False,
@@ -69,9 +76,27 @@ else:
         marker='x', s=STYLE_CN['size'], 
         color=STYLE_BD['color'], alpha=STYLE_BD['alpha']
     )
+ax.text(
+    0.95, 0.05, 
+    'Footprints: {}'.format(EngNumber(BLD.shape[0])), 
+    transform=ax.transAxes, 
+    horizontalalignment='right', verticalalignment='bottom', 
+    color=STYLE_TX['color'], fontsize=STYLE_TX['size']
+)
 fig.savefig(
     path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'.png'), 
     facecolor='w', bbox_inches='tight', pad_inches=0.1, dpi=300,
     transparent=False
 )
 plt.close('all')
+###############################################################################
+# Export to Disk
+###############################################################################
+pkl.dump(
+    BLD, path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'_BLD'), 
+    compression='bz2'
+)
+pkl.dump(
+    NTW, path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'_NTW'), 
+    compression='bz2'
+)
