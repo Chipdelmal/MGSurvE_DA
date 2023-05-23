@@ -13,8 +13,6 @@ import numpy as np
 import pandas as pd
 import MGSurvE as srv
 import auxiliary as aux
-warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
-
 
 
 if srv.isNotebook():
@@ -47,7 +45,7 @@ BLD['centroid_y'] = [poly.centroid.y for poly in BLD['geometry']]
 # Inspect (Cercle ~ State)
 ###############################################################################
 coms = sorted(list(set(CNT['COMMUNE'])))
-CNT.sort_values(by='POPULATION', ascending=False).iloc[8]
+CNT.sort_values(by='POPULATION', ascending=False)
 ###############################################################################
 # Map
 ###############################################################################

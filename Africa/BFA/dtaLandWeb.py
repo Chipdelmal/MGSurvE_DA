@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import warnings
+import shutup; shutup.please()
 from os import path
 from sys import argv
 import osmnx as ox
@@ -16,9 +16,6 @@ import pandas as pd
 import MGSurvE as srv
 import auxiliary as aux
 ox.config(log_console=False , use_cache=True)
-warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
-warnings.filterwarnings("ignore", category=RuntimeWarning) 
-warnings.filterwarnings("ignore", category=UserWarning) 
 
 
 if srv.isNotebook():
@@ -57,7 +54,7 @@ STYLE_BG = {'color': '#0b2545'}
 STYLE_TX = {'color': '#faf9f9', 'size': 20}
 STYLE_CN = {'color': '#faf9f9', 'alpha': 0.20, 'size': 25}
 STYLE_BD = {'color': '#faf9f9', 'alpha': 0.950}
-STYLE_RD = {'color': '#ede0d4', 'alpha': 0.090, 'width': 1}
+STYLE_RD = {'color': '#ede0d4', 'alpha': 0.100, 'width': 1.5}
 G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
 (fig, ax) = ox.plot_graph(
     G, node_size=0, figsize=(40, 40), show=False,
