@@ -6,12 +6,14 @@ from os import path
 from sys import argv
 import osmnx as ox
 from shapely import wkt
+from random import shuffle, uniform
 from engineering_notation import EngNumber
 import cartopy.crs as ccrs
 import cartopy.feature as cf
 import compress_pickle as pkl
 import matplotlib
 import matplotlib.pyplot as plt
+from sklearn.cluster import AgglomerativeClustering, SpectralClustering, KMeans
 import numpy as np
 import pandas as pd
 import MGSurvE as srv
@@ -29,7 +31,10 @@ else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST) = argv[1:]
     COORDS = tuple(map(float, COORDS.split(', ')))
     DIST = int(DIST)
-(PROJ, FOOTPRINT) = (ccrs.PlateCarree(), True)
+(PROJ, FOOTPRINT, CLUSTERS_ALG, CLUSTERS_NUM) = (
+    ccrs.PlateCarree(), True, 
+    KMeans, 750
+)
 ###############################################################################
 # Set Paths
 ###############################################################################
@@ -48,6 +53,16 @@ NTW = ox.graph_from_point(
 )
 BLD['centroid_lon'] = [poly.centroid.x for poly in BLD['geometry']]
 BLD['centroid_lat'] = [poly.centroid.y for poly in BLD['geometry']]
+BLD.reset_index(inplace=True)
+###############################################################################
+# Cluster Data
+###############################################################################
+if CLUSTERS_NUM and BLD.shape[0] > CLUSTERS_NUM:
+    lonLats = np.array(list(zip(BLD['centroid_lon'], BLD['centroid_lat'])))
+    clustering = CLUSTERS_ALG(n_clusters=CLUSTERS_NUM).fit(lonLats)
+    BLD['cluster_id'] = clustering.labels_
+else:
+    BLD['cluster_id'] = range(0, BLD.shape[0])
 ###############################################################################
 # Map
 ###############################################################################
@@ -57,6 +72,14 @@ STYLE_TX = {'color': '#faf9f9', 'size': 40}
 STYLE_CN = {'color': '#faf9f9', 'alpha': 0.20, 'size': 25}
 STYLE_BD = {'color': '#faf9f9', 'alpha': 0.950}
 STYLE_RD = {'color': '#ede0d4', 'alpha': 0.100, 'width': 1.5}
+CLUSTER_PALETTE= [
+    '#f72585', '#b5179e', '#7209b7', '#560bad', '#3a0ca3',
+    '#3f37c9', '#4361ee', '#4895ef', '#4cc9f0', '#80ed99',
+    '#b8f2e6', '#e9ff70', '#fe6d73', '#ffc6ff', '#ffd670',
+    '#a1b5d8', '#9e0059', '#f88dad', '#dfdfdf', '#ffeedd'
+]
+CLST_COL = CLUSTER_PALETTE*CLUSTERS_NUM
+shuffle(CLST_COL)
 G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
 (fig, ax) = ox.plot_graph(
     G, node_size=0, figsize=(40, 40), show=False,
@@ -74,6 +97,12 @@ else:
         BLD['centroid_lon'], BLD['centroid_lat'], 
         marker='x', s=STYLE_CN['size'], 
         color=STYLE_BD['color'], alpha=STYLE_BD['alpha']
+    )
+if CLUSTERS_NUM:
+    (fig, ax) = ox.plot_footprints(
+        BLD, ax=ax, save=False, show=False, close=False,
+        bgcolor=STYLE_BG['color'], alpha=.5,
+        color=[CLST_COL[ix] for ix in BLD['cluster_id']], 
     )
 ax.text(
     0.99, 0.01, 

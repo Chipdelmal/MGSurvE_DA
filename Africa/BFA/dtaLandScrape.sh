@@ -1,6 +1,7 @@
 #!/bin/bash
 
-
+python dtaLandWeb.py 'sami' 'Burkina Faso' 'BFA' 'Toece' '11.8302, -1.2656' '1000'
+python dtaLandWeb.py 'sami' 'Burkina Faso' 'BFA' 'Manga' '11.6679, -1.0760' '2000'
 python dtaLandWeb.py 'sami' 'Burkina Faso' 'BFA' 'Fada NGourma' '12.0627, 0.3695' '2000'
 python dtaLandWeb.py 'sami' 'Burkina Faso' 'BFA' 'Pissila' '13.1658, -0.8288' '2000'
 python dtaLandWeb.py 'sami' 'Burkina Faso' 'BFA' 'Douna' '10.6162, -5.1024' '2000'
