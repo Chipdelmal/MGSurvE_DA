@@ -10,19 +10,20 @@ from engineering_notation import EngNumber
 import cartopy.crs as ccrs
 import cartopy.feature as cf
 import compress_pickle as pkl
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import MGSurvE as srv
 import auxiliary as aux
 ox.config(log_console=False , use_cache=True)
-
+matplotlib.rc('font', family='Savoye LET')
 
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST) = (
         'sami',
         'Burkina Faso', 'BFA', 
-        'Niangoloko', (10.2829, -4.9213), 5000
+        'Niangoloko', (10.2829, -4.9213), 3000
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST) = argv[1:]
@@ -50,8 +51,9 @@ BLD['centroid_lat'] = [poly.centroid.y for poly in BLD['geometry']]
 ###############################################################################
 # Map
 ###############################################################################
+STYLE_GD = {'color': '#8da9c4', 'alpha': 0.35, 'width': 0.5, 'step': 0.01, 'range': 1, 'style': ':'}
 STYLE_BG = {'color': '#0b2545'}
-STYLE_TX = {'color': '#faf9f9', 'size': 20}
+STYLE_TX = {'color': '#faf9f9', 'size': 40}
 STYLE_CN = {'color': '#faf9f9', 'alpha': 0.20, 'size': 25}
 STYLE_BD = {'color': '#faf9f9', 'alpha': 0.950}
 STYLE_RD = {'color': '#ede0d4', 'alpha': 0.100, 'width': 1.5}
@@ -80,9 +82,29 @@ ax.text(
     horizontalalignment='right', verticalalignment='bottom', 
     color=STYLE_TX['color'], fontsize=STYLE_TX['size']
 )
+ylims = ax.get_ylim()
+ax.set_ylim(ylims[0], ylims[1]*1.0001)
+ax.text(
+    0.5, 0.975,
+    '{}'.format(COMMUNE), 
+    transform=ax.transAxes, 
+    horizontalalignment='center', verticalalignment='top', 
+    color=STYLE_TX['color'], fontsize=STYLE_TX['size']*5
+)
+ax.vlines(
+    np.arange(COORDS[1]-STYLE_GD['range'], COORDS[1]+STYLE_GD['range'], STYLE_GD['step']), 
+    COORDS[0]-1, COORDS[0]+1, 
+    colors=STYLE_GD['color'], alpha=STYLE_GD['alpha'], linestyles=STYLE_GD['style']
+)
+ax.hlines(
+    np.arange(COORDS[0]-STYLE_GD['range'], COORDS[0]+STYLE_GD['range'], STYLE_GD['step']), 
+    COORDS[1]-1, COORDS[1]+1, 
+    colors=STYLE_GD['color'], alpha=STYLE_GD['alpha'], linestyles=STYLE_GD['style']
+)
+ax.set_facecolor(STYLE_BG['color'])
 fig.savefig(
     path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'.png'), 
-    facecolor='w', bbox_inches='tight', pad_inches=0.1, dpi=300,
+    facecolor=STYLE_BG['color'], bbox_inches='tight', pad_inches=1, dpi=300,
     transparent=False
 )
 plt.close('all')
@@ -97,3 +119,11 @@ pkl.dump(
     NTW, path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'_NTW'), 
     compression='bz2'
 )
+
+
+# import matplotlib.font_manager
+# from IPython.core.display import HTML
+# def make_html(fontname):
+#     return "<p>{font}: <span style='font-family:{font}; font-size: 24px;'>{font}</p>".format(font=fontname)
+# code = "\n".join([make_html(font) for font in sorted(set([f.name for f in matplotlib.font_manager.fontManager.ttflist]))])
+# HTML("<div style='column-count: 2;'>{}</div>".format(code))
