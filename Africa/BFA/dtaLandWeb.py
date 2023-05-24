@@ -76,7 +76,8 @@ CLUSTER_PALETTE= [
     '#f72585', '#b5179e', '#7209b7', '#560bad', '#3a0ca3',
     '#3f37c9', '#4361ee', '#4895ef', '#4cc9f0', '#80ed99',
     '#b8f2e6', '#e9ff70', '#fe6d73', '#ffc6ff', '#ffd670',
-    '#a1b5d8', '#9e0059', '#f88dad', '#dfdfdf', '#ffeedd'
+    '#a1b5d8', '#9e0059', '#f88dad', '#dfdfdf', '#ffeedd',
+    '#d7e3fc', '#ef233c', '#eac4d5', '#04e762', '#ca7df9'
 ]
 CLST_COL = CLUSTER_PALETTE*CLUSTERS_NUM
 shuffle(CLST_COL)
@@ -101,7 +102,7 @@ else:
 if CLUSTERS_NUM:
     (fig, ax) = ox.plot_footprints(
         BLD, ax=ax, save=False, show=False, close=False,
-        bgcolor=STYLE_BG['color'], alpha=.5,
+        bgcolor=STYLE_BG['color'], alpha=np.random.uniform(.35, .65),
         color=[CLST_COL[ix] for ix in BLD['cluster_id']], 
     )
 ax.text(
