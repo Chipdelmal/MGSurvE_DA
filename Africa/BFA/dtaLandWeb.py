@@ -14,6 +14,8 @@ import compress_pickle as pkl
 import matplotlib
 import matplotlib.pyplot as plt
 from sklearn.cluster import AgglomerativeClustering, SpectralClustering, KMeans
+from sklearn.cluster import DBSCAN, OPTICS, cluster_optics_dbscan
+from sklearn.mixture import GaussianMixture
 import numpy as np
 import pandas as pd
 import MGSurvE as srv
@@ -33,7 +35,7 @@ else:
     DIST = int(DIST)
 (PROJ, FOOTPRINT, CLUSTERS_ALG, CLUSTERS_NUM) = (
     ccrs.PlateCarree(), True, 
-    KMeans, 750
+    AgglomerativeClustering, 500
 )
 ###############################################################################
 # Set Paths
