@@ -25,16 +25,16 @@ if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST) = (
         'sami',
         'Burkina Faso', 'BFA', 
-        'Niangoloko', (10.2826803, -4.9240132),
-        4500
+        'Fanka', (13.1490, -1.0171),
+        4000
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST) = argv[1:]
     COORDS = tuple(map(float, COORDS.split(', ')))
     DIST = int(DIST)
-(PROJ, FOOTPRINT, CLUSTERS_ALG, CLUSTERS_NUM, DROP_NOISE) = (
+(PROJ, FOOTPRINT, CLUSTERS_ALG, CLUSTER_PAR, DROP_NOISE) = (
     ccrs.PlateCarree(), True, 
-    DBSCAN, 250, True
+    DBSCAN, {'eps': 0.0225, 'min': 4}, True
 )
 ###############################################################################
 # Set Paths
@@ -58,14 +58,14 @@ BLD.reset_index(inplace=True)
 ###############################################################################
 # Cluster Data
 ###############################################################################
-if CLUSTERS_NUM and BLD.shape[0] > CLUSTERS_NUM:
+if CLUSTERS_ALG:
     # lonLats = np.array(list(zip(BLD['centroid_lon'], BLD['centroid_lat'])))
     # clustering = CLUSTERS_ALG(n_clusters=CLUSTERS_NUM).fit(lonLats)
     latLons = np.array(list(zip(BLD['centroid_lat'], BLD['centroid_lon'])))
     clustering = DBSCAN(
-        eps=0.02/aux.KMS_PER_RADIAN, min_samples=5, 
-        algorithm='ball_tree', metric='haversine',
-        n_jobs=4
+        eps=CLUSTER_PAR['eps']/aux.KMS_PER_RADIAN, 
+        min_samples=CLUSTER_PAR['min'], 
+        algorithm='ball_tree', metric='haversine', n_jobs=4
     ).fit(np.radians(latLons))
     clustersNum = len(set(clustering.labels_))
     BLD['cluster_id'] = clustering.labels_
@@ -87,9 +87,10 @@ CLUSTER_PALETTE= [
     '#3f37c9', '#4361ee', '#4895ef', '#4cc9f0', '#80ed99',
     '#b8f2e6', '#e9ff70', '#fe6d73', '#ffc6ff', '#ffd670',
     '#a1b5d8', '#9e0059', '#f88dad', '#dfdfdf', '#ffeedd',
-    '#d7e3fc', '#ef233c', '#eac4d5', '#04e762', '#ca7df9'
+    '#d7e3fc', '#ef233c', '#eac4d5', '#04e762', '#ca7df9',
+    '#ffff3f', '#edc4b3', '#fe5d9f', '#639fab', '#9cbfa7'
 ]
-CLST_COL = CLUSTER_PALETTE*CLUSTERS_NUM
+CLST_COL = CLUSTER_PALETTE*clustersNum
 shuffle(CLST_COL)
 CLST_COLS_COL = [CLST_COL[ix] for ix in BLD['cluster_id']]
 BLD['cluster_color'] = CLST_COLS_COL
@@ -113,16 +114,17 @@ else:
         marker='x', s=STYLE_CN['size'], 
         color=STYLE_BD['color'], alpha=STYLE_BD['alpha']
     )
-if CLUSTERS_NUM:
-    (fig, ax) = ox.plot_footprints(
-        BLD, ax=ax, save=False, show=False, close=False,
-        bgcolor=STYLE_BG['color'], alpha=0.5,
-        color=list(BLD['cluster_color']), 
-    )
+(fig, ax) = ox.plot_footprints(
+    BLD, ax=ax, save=False, show=False, close=False,
+    bgcolor=STYLE_BG['color'], alpha=0.5,
+    color=list(BLD['cluster_color']), 
+)
 ax.text(
     0.99, 0.01, 
-    'Footprints: {}\nClusters: {}'.format(
-        EngNumber(BLD.shape[0]), clustersNum
+    'Footprints: {}\nNon-Noise: {}\nClusters: {}'.format(
+        EngNumber(BLD.shape[0]), 
+        EngNumber(int(BLD.shape[0]-np.sum(BLD['cluster_id']==-1))), 
+        clustersNum
     ), 
     transform=ax.transAxes, 
     horizontalalignment='right', verticalalignment='bottom', 

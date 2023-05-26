@@ -22,7 +22,7 @@ matplotlib.rc('font', family='Savoye LET')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = (
         'sami', 'Burkina Faso', 'BFA', 
-        'Niangoloko', (10.2826803, -4.9240132)
+        'Nouna', (12.7326, -3.8603)
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = argv[1:]
