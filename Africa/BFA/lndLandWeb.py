@@ -22,19 +22,19 @@ ox.config(log_console=False , use_cache=True)
 matplotlib.rc('font', family='Savoye LET')
 
 if srv.isNotebook():
-    (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST) = (
+    (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST, EPS, MIN) = (
         'sami',
         'Burkina Faso', 'BFA', 
-        'Fanka', (13.1490, -1.0171),
-        4000
+        'Fanka', (13.1490, -1.0171), 2500, 
+        0.0175, 3
     )
 else:
-    (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST) = argv[1:]
+    (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST, EPS, MIN) = argv[1:]
     COORDS = tuple(map(float, COORDS.split(', ')))
     DIST = int(DIST)
 (PROJ, FOOTPRINT, CLUSTERS_ALG, CLUSTER_PAR, DROP_NOISE) = (
     ccrs.PlateCarree(), True, 
-    DBSCAN, {'eps': 0.0225, 'min': 4}, True
+    DBSCAN, {'eps': float(EPS), 'min': int(MIN)}, True
 )
 ###############################################################################
 # Set Paths
