@@ -26,7 +26,7 @@ if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST) = (
         'sami',
         'Burkina Faso', 'BFA', 
-        'Niangoloko', (10.2829, -4.9213), 3000
+        'Manga', (11.6679, -1.0760), 2000
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST) = argv[1:]
@@ -34,7 +34,7 @@ else:
     DIST = int(DIST)
 (PROJ, FOOTPRINT, CLUSTERS_ALG, CLUSTERS_NUM) = (
     ccrs.PlateCarree(), True, 
-    KMeans, 1000
+    AgglomerativeClustering, 500
 )
 ###############################################################################
 # Set Paths
@@ -101,10 +101,12 @@ else:
         color=STYLE_BD['color'], alpha=STYLE_BD['alpha']
     )
 if CLUSTERS_NUM:
+    CLST_COLS_COL = [CLST_COL[ix] for ix in BLD['cluster_id']]
+    BLD['cluster_color'] = CLST_COLS_COL
     (fig, ax) = ox.plot_footprints(
         BLD, ax=ax, save=False, show=False, close=False,
         bgcolor=STYLE_BG['color'], alpha=np.random.uniform(.35, .65),
-        color=[CLST_COL[ix] for ix in BLD['cluster_id']], 
+        color=CLST_COLS_COL, 
     )
 ax.text(
     0.99, 0.01, 
