@@ -20,14 +20,16 @@ ox.config(log_console=False , use_cache=True)
 matplotlib.rc('font', family='Savoye LET')
 
 if srv.isNotebook():
-    (USR, COUNTRY, CODE, COMMUNE) = ('sami', 'Burkina Faso', 'BFA', 'Manga')
+    (USR, COUNTRY, CODE, COMMUNE, COORDS) = (
+        'sami', 'Burkina Faso', 'BFA', 
+        'Niangoloko', (10.2826803, -4.9240132)
+    )
 else:
-    (USR, COUNTRY, CODE, COMMUNE) = argv[1:]
+    (USR, COUNTRY, CODE, COMMUNE, COORDS) = argv[1:]
 (PROJ, FOOTPRINT, OVW) = (
     ccrs.PlateCarree(), True, 
     {'dist': True, 'kernel': True}
 )
-COORDS = (11.6679, -1.0760)
 ###############################################################################
 # Set Paths
 ###############################################################################
@@ -87,18 +89,9 @@ aggDF.to_csv(pthAct)
 STYLE_GD = {'color': '#8da9c4', 'alpha': 0.35, 'width': 0.5, 'step': 0.01, 'range': 1, 'style': ':'}
 STYLE_BG = {'color': '#0b2545'}
 STYLE_TX = {'color': '#faf9f9', 'size': 40}
-STYLE_CN = {'color': '#faf9f9', 'alpha': 0.20, 'size': 75}
+STYLE_CN = {'color': '#faf9f9', 'alpha': 0.20, 'size': 100}
 STYLE_BD = {'color': '#faf9f9', 'alpha': 0.950}
 STYLE_RD = {'color': '#ede0d4', 'alpha': 0.100, 'width': 1.5}
-CLUSTER_PALETTE= [
-    '#f72585', '#b5179e', '#7209b7', '#560bad', '#3a0ca3',
-    '#3f37c9', '#4361ee', '#4895ef', '#4cc9f0', '#80ed99',
-    '#b8f2e6', '#e9ff70', '#fe6d73', '#ffc6ff', '#ffd670',
-    '#a1b5d8', '#9e0059', '#f88dad', '#dfdfdf', '#ffeedd',
-    '#d7e3fc', '#ef233c', '#eac4d5', '#04e762', '#ca7df9'
-]
-CLST_COL = CLUSTER_PALETTE*len(clstSrt)
-shuffle(CLST_COL)
 G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
 (fig, ax) = ox.plot_graph(
     G, node_size=0, figsize=(40, 40), show=False,
@@ -108,18 +101,20 @@ G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
 if FOOTPRINT:
     (fig, ax) = ox.plot_footprints(
         BLD, ax=ax, save=False, show=False, close=False,
-        bgcolor=STYLE_BG['color'], color=STYLE_BD['color'], 
+        bgcolor=STYLE_BG['color'], 
+        color=STYLE_BD['color'], 
         alpha=STYLE_BD['alpha']
     )
 ax.scatter(
     aggDF['lon'], aggDF['lat'], 
-    marker='x', s=STYLE_CN['size'], 
+    marker='x', s=STYLE_CN['size'],
+    alpha=.75,
     color=aggDF['color']
 )
 (fig, ax) = ox.plot_footprints(
     BLD, ax=ax, save=False, show=False, close=False,
     bgcolor=STYLE_BG['color'], alpha=.45,
-    color=[CLST_COL[ix] for ix in BLD['cluster_id']], 
+    color=list(BLD['cluster_color']), 
 )
 ax.text(
     0.99, 0.01, 

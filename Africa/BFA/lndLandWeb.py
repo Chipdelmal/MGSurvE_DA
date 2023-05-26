@@ -7,14 +7,13 @@ import osmnx as ox
 from shapely import wkt
 from random import shuffle, uniform
 from engineering_notation import EngNumber
+from collections import Counter
 import cartopy.crs as ccrs
 import cartopy.feature as cf
 import compress_pickle as pkl
 import matplotlib
 import matplotlib.pyplot as plt
-from sklearn.cluster import AgglomerativeClustering, SpectralClustering, KMeans
-from sklearn.cluster import DBSCAN, OPTICS, cluster_optics_dbscan
-from sklearn.mixture import GaussianMixture
+from sklearn.cluster import DBSCAN, OPTICS
 import numpy as np
 import pandas as pd
 import MGSurvE as srv
@@ -26,15 +25,16 @@ if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST) = (
         'sami',
         'Burkina Faso', 'BFA', 
-        'Manga', (11.6679, -1.0760), 2000
+        'Niangoloko', (10.2826803, -4.9240132),
+        4500
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST) = argv[1:]
     COORDS = tuple(map(float, COORDS.split(', ')))
     DIST = int(DIST)
-(PROJ, FOOTPRINT, CLUSTERS_ALG, CLUSTERS_NUM) = (
+(PROJ, FOOTPRINT, CLUSTERS_ALG, CLUSTERS_NUM, DROP_NOISE) = (
     ccrs.PlateCarree(), True, 
-    AgglomerativeClustering, 500
+    DBSCAN, 250, True
 )
 ###############################################################################
 # Set Paths
@@ -59,9 +59,17 @@ BLD.reset_index(inplace=True)
 # Cluster Data
 ###############################################################################
 if CLUSTERS_NUM and BLD.shape[0] > CLUSTERS_NUM:
-    lonLats = np.array(list(zip(BLD['centroid_lon'], BLD['centroid_lat'])))
-    clustering = CLUSTERS_ALG(n_clusters=CLUSTERS_NUM).fit(lonLats)
+    # lonLats = np.array(list(zip(BLD['centroid_lon'], BLD['centroid_lat'])))
+    # clustering = CLUSTERS_ALG(n_clusters=CLUSTERS_NUM).fit(lonLats)
+    latLons = np.array(list(zip(BLD['centroid_lat'], BLD['centroid_lon'])))
+    clustering = DBSCAN(
+        eps=0.02/aux.KMS_PER_RADIAN, min_samples=5, 
+        algorithm='ball_tree', metric='haversine',
+        n_jobs=4
+    ).fit(np.radians(latLons))
+    clustersNum = len(set(clustering.labels_))
     BLD['cluster_id'] = clustering.labels_
+    Counter(clustering.labels_)
 else:
     BLD['cluster_id'] = range(0, BLD.shape[0])
 ###############################################################################
@@ -73,6 +81,7 @@ STYLE_TX = {'color': '#faf9f9', 'size': 40}
 STYLE_CN = {'color': '#faf9f9', 'alpha': 0.20, 'size': 25}
 STYLE_BD = {'color': '#faf9f9', 'alpha': 0.950}
 STYLE_RD = {'color': '#ede0d4', 'alpha': 0.100, 'width': 1.5}
+# Generate colors -------------------------------------------------------------
 CLUSTER_PALETTE= [
     '#f72585', '#b5179e', '#7209b7', '#560bad', '#3a0ca3',
     '#3f37c9', '#4361ee', '#4895ef', '#4cc9f0', '#80ed99',
@@ -82,6 +91,10 @@ CLUSTER_PALETTE= [
 ]
 CLST_COL = CLUSTER_PALETTE*CLUSTERS_NUM
 shuffle(CLST_COL)
+CLST_COLS_COL = [CLST_COL[ix] for ix in BLD['cluster_id']]
+BLD['cluster_color'] = CLST_COLS_COL
+BLD.loc[BLD['cluster_id']==-1, 'cluster_color'] = '#000000'
+# Plot map --------------------------------------------------------------------
 G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
 (fig, ax) = ox.plot_graph(
     G, node_size=0, figsize=(40, 40), show=False,
@@ -101,16 +114,16 @@ else:
         color=STYLE_BD['color'], alpha=STYLE_BD['alpha']
     )
 if CLUSTERS_NUM:
-    CLST_COLS_COL = [CLST_COL[ix] for ix in BLD['cluster_id']]
-    BLD['cluster_color'] = CLST_COLS_COL
     (fig, ax) = ox.plot_footprints(
         BLD, ax=ax, save=False, show=False, close=False,
-        bgcolor=STYLE_BG['color'], alpha=np.random.uniform(.35, .65),
-        color=CLST_COLS_COL, 
+        bgcolor=STYLE_BG['color'], alpha=0.5,
+        color=list(BLD['cluster_color']), 
     )
 ax.text(
     0.99, 0.01, 
-    'Footprints: {}'.format(EngNumber(BLD.shape[0])), 
+    'Footprints: {}\nClusters: {}'.format(
+        EngNumber(BLD.shape[0]), clustersNum
+    ), 
     transform=ax.transAxes, 
     horizontalalignment='right', verticalalignment='bottom', 
     color=STYLE_TX['color'], fontsize=STYLE_TX['size']
@@ -144,6 +157,7 @@ plt.close('all')
 ###############################################################################
 # Export to Disk
 ###############################################################################
+BLD = BLD.drop(BLD[BLD['cluster_id']==-1].index)
 pkl.dump(
     BLD, path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'_BLD'), 
     compression='bz2'
@@ -153,10 +167,3 @@ pkl.dump(
     compression='bz2'
 )
 
-
-# import matplotlib.font_manager
-# from IPython.core.display import HTML
-# def make_html(fontname):
-#     return "<p>{font}: <span style='font-family:{font}; font-size: 24px;'>{font}</p>".format(font=fontname)
-# code = "\n".join([make_html(font) for font in sorted(set([f.name for f in matplotlib.font_manager.fontManager.ttflist]))])
-# HTML("<div style='column-count: 2;'>{}</div>".format(code))
