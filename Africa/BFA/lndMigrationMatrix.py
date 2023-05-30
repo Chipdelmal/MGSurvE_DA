@@ -16,7 +16,8 @@ import pandas as pd
 import MoNeT_MGDrivE as monet
 import MGSurvE as srv
 import auxiliary as aux
-ox.config(log_console=False , use_cache=True)
+ox.settings.log_console=False
+ox.settings.use_cache=True
 matplotlib.rc('font', family='Savoye LET')
 
 if srv.isNotebook():
@@ -35,17 +36,17 @@ else:
 ###############################################################################
 paths = aux.userPaths(USR)
 (pthDst, pthMig, pthAgg, pthAct) = (
-    path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'_DST.bz'),
-    path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'_MIG.bz'),
-    path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'_AGG.bz'),
-    path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'_ACT.csv')
+    path.join(paths['data'], CODE, COMMUNE+'_DST.bz'),
+    path.join(paths['data'], CODE, COMMUNE+'_MIG.bz'),
+    path.join(paths['data'], CODE, COMMUNE+'_AGG.bz'),
+    path.join(paths['data'], CODE, COMMUNE+'_ACT.csv')
 )
 ###############################################################################
 # Read from Disk
 ###############################################################################
 (BLD, NTW) = (
-    pkl.load(path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'_BLD.bz')),
-    pkl.load(path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'_NTW.bz'))
+    pkl.load(path.join(paths['data'], CODE, COMMUNE+'_BLD.bz')),
+    pkl.load(path.join(paths['data'], CODE, COMMUNE+'_NTW.bz'))
 )
 ###############################################################################
 # Migration Matrix
@@ -144,7 +145,7 @@ ax.hlines(
 )
 ax.set_facecolor(STYLE_BG['color'])
 fig.savefig(
-    path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'_AGG.png'), 
+    path.join(paths['data'], CODE, COMMUNE+'_AGG.png'), 
     facecolor=STYLE_BG['color'], bbox_inches='tight', pad_inches=1, dpi=300,
     transparent=False
 )

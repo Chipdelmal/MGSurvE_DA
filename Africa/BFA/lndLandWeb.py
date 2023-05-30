@@ -18,7 +18,8 @@ import numpy as np
 import pandas as pd
 import MGSurvE as srv
 import auxiliary as aux
-ox.config(log_console=False , use_cache=True)
+ox.settings.log_console=False
+ox.settings.use_cache=True
 matplotlib.rc('font', family='Savoye LET')
 
 if srv.isNotebook():
@@ -151,7 +152,7 @@ ax.hlines(
 )
 ax.set_facecolor(STYLE_BG['color'])
 fig.savefig(
-    path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'.png'), 
+    path.join(paths['data'], CODE, COMMUNE+'.png'), 
     facecolor=STYLE_BG['color'], bbox_inches='tight', pad_inches=1, dpi=300,
     transparent=False
 )
@@ -161,11 +162,11 @@ plt.close('all')
 ###############################################################################
 BLD = BLD.drop(BLD[BLD['cluster_id']==-1].index)
 pkl.dump(
-    BLD, path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'_BLD'), 
+    BLD, path.join(paths['data'], CODE, COMMUNE+'_BLD'), 
     compression='bz2'
 )
 pkl.dump(
-    NTW, path.join(paths['data'], 'HumanMobility', CODE, COMMUNE+'_NTW'), 
+    NTW, path.join(paths['data'], CODE, COMMUNE+'_NTW'), 
     compression='bz2'
 )
 
