@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-KMS_PER_RADIAN = 6371.0088
-
 def userPaths(user):
     if user=='sami':
         (DTA_ROOT, SIM_ROOT) = (
@@ -15,3 +13,5 @@ def userPaths(user):
             '/RAID5/marshallShare/MGSurvE_DA/'
         )
     return {'data': DTA_ROOT, 'sim': SIM_ROOT}
+
+

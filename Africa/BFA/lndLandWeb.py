@@ -4,20 +4,18 @@
 from os import path
 from sys import argv
 import osmnx as ox
-from shapely import wkt
-from random import shuffle, uniform
+from random import shuffle
 from engineering_notation import EngNumber
 from collections import Counter
 import cartopy.crs as ccrs
-import cartopy.feature as cf
 import compress_pickle as pkl
 import matplotlib
 import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN, OPTICS
 import numpy as np
-import pandas as pd
 import MGSurvE as srv
 import auxiliary as aux
+import constants as cst
 ox.settings.log_console=False
 ox.settings.use_cache=True
 # matplotlib.rc('font', family='Savoye LET')
@@ -26,7 +24,7 @@ if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST, EPS, MIN) = (
         'sami',
         'Burkina Faso', 'BFA', 
-        'Reo', (12.3201, -2.4753), 1000, 0.02, 1
+        'Nouna', (12.7326,-3.8603), 2000, 0.018, 3
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST, EPS, MIN) = argv[1:]
@@ -63,7 +61,7 @@ if CLUSTERS_ALG:
     # clustering = CLUSTERS_ALG(n_clusters=CLUSTERS_NUM).fit(lonLats)
     latLons = np.array(list(zip(BLD['centroid_lat'], BLD['centroid_lon'])))
     clustering = DBSCAN(
-        eps=CLUSTER_PAR['eps']/aux.KMS_PER_RADIAN, 
+        eps=CLUSTER_PAR['eps']/cst.KMS_PER_RADIAN, 
         min_samples=CLUSTER_PAR['min'], 
         algorithm='ball_tree', metric='haversine', n_jobs=4
     ).fit(np.radians(latLons))
@@ -75,26 +73,13 @@ else:
 ###############################################################################
 # Map
 ###############################################################################
-STYLE_GD = {'color': '#8da9c4', 'alpha': 0.35, 'width': 0.5, 'step': 0.01, 'range': 1, 'style': ':'}
-STYLE_BG = {'color': '#0b2545'}
-STYLE_TX = {'color': '#faf9f9', 'size': 40}
-STYLE_CN = {'color': '#faf9f9', 'alpha': 0.20, 'size': 25}
-STYLE_BD = {'color': '#faf9f9', 'alpha': 0.950}
-STYLE_RD = {'color': '#ede0d4', 'alpha': 0.100, 'width': 1.5}
+(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
 # Generate colors -------------------------------------------------------------
-CLUSTER_PALETTE= [
-    '#f72585', '#b5179e', '#7209b7', '#560bad', '#3a0ca3',
-    '#3f37c9', '#4361ee', '#4895ef', '#4cc9f0', '#80ed99',
-    '#b8f2e6', '#e9ff70', '#fe6d73', '#ffc6ff', '#ffd670',
-    '#a1b5d8', '#9e0059', '#f88dad', '#dfdfdf', '#ffeedd',
-    '#d7e3fc', '#ef233c', '#eac4d5', '#04e762', '#ca7df9',
-    '#ffff3f', '#edc4b3', '#fe5d9f', '#639fab', '#9cbfa7'
-]
-CLST_COL = CLUSTER_PALETTE*clustersNum
+CLST_COL = cst.CLUSTER_PALETTE*clustersNum
 shuffle(CLST_COL)
 CLST_COLS_COL = [CLST_COL[ix] for ix in BLD['cluster_id']]
 BLD['cluster_color'] = CLST_COLS_COL
-BLD.loc[BLD['cluster_id']==-1, 'cluster_color'] = '#000000'
+BLD.loc[BLD['cluster_id']==-1, 'cluster_color'] = '#293241'
 # Plot map --------------------------------------------------------------------
 G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
 (fig, ax) = ox.plot_graph(

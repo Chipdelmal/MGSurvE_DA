@@ -16,6 +16,7 @@ import pandas as pd
 import MoNeT_MGDrivE as monet
 import MGSurvE as srv
 import auxiliary as aux
+import constants as cst
 ox.settings.log_console=False
 ox.settings.use_cache=True
 # matplotlib.rc('font', family='Savoye LET')
@@ -23,7 +24,7 @@ ox.settings.use_cache=True
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = (
         'sami', 'Burkina Faso', 'BFA', 
-        'Fanka', (13.1490, -1.0171)
+        'Nouna', (12.7326,-3.8603)
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = argv[1:]
@@ -88,12 +89,7 @@ aggDF.to_csv(pthAct)
 ###############################################################################
 # Map
 ###############################################################################
-STYLE_GD = {'color': '#8da9c4', 'alpha': 0.35, 'width': 0.5, 'step': 0.01, 'range': 1, 'style': ':'}
-STYLE_BG = {'color': '#0b2545'}
-STYLE_TX = {'color': '#faf9f9', 'size': 40}
-STYLE_CN = {'color': '#faf9f9', 'alpha': 0.20, 'size': 200}
-STYLE_BD = {'color': '#faf9f9', 'alpha': 0.950}
-STYLE_RD = {'color': '#ede0d4', 'alpha': 0.100, 'width': 1.5}
+(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
 G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
 (fig, ax) = ox.plot_graph(
     G, node_size=0, figsize=(40, 40), show=False,
@@ -103,8 +99,8 @@ G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
 ax.scatter(
     aggDF['lon'], aggDF['lat'], 
     marker='x', s=STYLE_CN['size'],
-    alpha=.75,
-    zorder=10,
+    alpha=.75, zorder=10,
+    # facecolors='none',
     color=aggDF['color']
 )
 (fig, ax) = ox.plot_footprints(
