@@ -20,7 +20,7 @@ import MGSurvE as srv
 import auxiliary as aux
 ox.settings.log_console=False
 ox.settings.use_cache=True
-matplotlib.rc('font', family='Savoye LET')
+# matplotlib.rc('font', family='Savoye LET')
 
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST, EPS, MIN) = (
