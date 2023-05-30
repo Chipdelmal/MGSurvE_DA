@@ -23,13 +23,14 @@ matplotlib.rc('font', family='Savoye LET')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = (
         'sami', 'Burkina Faso', 'BFA', 
-        'Nouna', (12.7326, -3.8603)
+        'Fanka', (13.1490, -1.0171)
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = argv[1:]
+    COORDS = tuple(map(float, COORDS.split(', ')))
 (PROJ, FOOTPRINT, OVW) = (
     ccrs.PlateCarree(), True, 
-    {'dist': True, 'kernel': True}
+    {'dist': False, 'kernel': False}
 )
 ###############################################################################
 # Set Paths
@@ -99,13 +100,6 @@ G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
     bgcolor=STYLE_BG['color'], edge_color=STYLE_RD['color'], 
     edge_alpha=STYLE_RD['alpha'], edge_linewidth=STYLE_RD['width']
 )
-if FOOTPRINT:
-    (fig, ax) = ox.plot_footprints(
-        BLD, ax=ax, save=False, show=False, close=False,
-        bgcolor=STYLE_BG['color'], 
-        color=STYLE_BD['color'], 
-        alpha=STYLE_BD['alpha']
-    )
 ax.scatter(
     aggDF['lon'], aggDF['lat'], 
     marker='x', s=STYLE_CN['size'],
@@ -114,7 +108,12 @@ ax.scatter(
 )
 (fig, ax) = ox.plot_footprints(
     BLD, ax=ax, save=False, show=False, close=False,
-    bgcolor=STYLE_BG['color'], alpha=.45,
+    bgcolor=STYLE_BG['color'], color=STYLE_BD['color'], 
+    alpha=STYLE_BD['alpha']
+)
+(fig, ax) = ox.plot_footprints(
+    BLD, ax=ax, save=False, show=False, close=False,
+    bgcolor=STYLE_BG['color'], alpha=0.65,
     color=list(BLD['cluster_color']), 
 )
 ax.text(

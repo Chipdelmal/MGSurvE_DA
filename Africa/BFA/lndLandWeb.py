@@ -103,21 +103,14 @@ G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
     bgcolor=STYLE_BG['color'], edge_color=STYLE_RD['color'], 
     edge_alpha=STYLE_RD['alpha'], edge_linewidth=STYLE_RD['width']
 )
-if FOOTPRINT:
-    (fig, ax) = ox.plot_footprints(
-        BLD, ax=ax, save=False, show=False, close=False,
-        bgcolor=STYLE_BG['color'], color=STYLE_BD['color'], 
-        alpha=STYLE_BD['alpha']
-    )
-else:
-    ax.scatter(
-        BLD['centroid_lon'], BLD['centroid_lat'], 
-        marker='x', s=STYLE_CN['size'], 
-        color=STYLE_BD['color'], alpha=STYLE_BD['alpha']
-    )
 (fig, ax) = ox.plot_footprints(
     BLD, ax=ax, save=False, show=False, close=False,
-    bgcolor=STYLE_BG['color'], alpha=0.5,
+    bgcolor=STYLE_BG['color'], color=STYLE_BD['color'], 
+    alpha=STYLE_BD['alpha']
+)
+(fig, ax) = ox.plot_footprints(
+    BLD, ax=ax, save=False, show=False, close=False,
+    bgcolor=STYLE_BG['color'], alpha=0.65,
     color=list(BLD['cluster_color']), 
 )
 ax.text(
