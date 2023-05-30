@@ -18,7 +18,7 @@ import MGSurvE as srv
 import auxiliary as aux
 ox.settings.log_console=False
 ox.settings.use_cache=True
-matplotlib.rc('font', family='Savoye LET')
+# matplotlib.rc('font', family='Savoye LET')
 
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = (
@@ -91,7 +91,7 @@ aggDF.to_csv(pthAct)
 STYLE_GD = {'color': '#8da9c4', 'alpha': 0.35, 'width': 0.5, 'step': 0.01, 'range': 1, 'style': ':'}
 STYLE_BG = {'color': '#0b2545'}
 STYLE_TX = {'color': '#faf9f9', 'size': 40}
-STYLE_CN = {'color': '#faf9f9', 'alpha': 0.20, 'size': 100}
+STYLE_CN = {'color': '#faf9f9', 'alpha': 0.20, 'size': 200}
 STYLE_BD = {'color': '#faf9f9', 'alpha': 0.950}
 STYLE_RD = {'color': '#ede0d4', 'alpha': 0.100, 'width': 1.5}
 G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
@@ -104,6 +104,7 @@ ax.scatter(
     aggDF['lon'], aggDF['lat'], 
     marker='x', s=STYLE_CN['size'],
     alpha=.75,
+    zorder=10,
     color=aggDF['color']
 )
 (fig, ax) = ox.plot_footprints(
