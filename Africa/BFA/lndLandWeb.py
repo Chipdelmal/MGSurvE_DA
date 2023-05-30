@@ -26,12 +26,12 @@ if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST, EPS, MIN) = (
         'sami',
         'Burkina Faso', 'BFA', 
-        'Fanka', (13.1490, -1.0171), 2500, 
+        'Koudougou', (12.2560, -2.3588), 3000, 
         0.0175, 3
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST, EPS, MIN) = argv[1:]
-    COORDS = tuple(map(float, COORDS.split(', ')))
+    COORDS = tuple(map(float, COORDS.split(',')))
     DIST = int(DIST)
 (PROJ, FOOTPRINT, CLUSTERS_ALG, CLUSTER_PAR, DROP_NOISE) = (
     ccrs.PlateCarree(), True, 

@@ -27,7 +27,7 @@ if srv.isNotebook():
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = argv[1:]
-    COORDS = tuple(map(float, COORDS.split(', ')))
+    COORDS = tuple(map(float, COORDS.split(',')))
 (PROJ, FOOTPRINT, OVW) = (
     ccrs.PlateCarree(), True, 
     {'dist': False, 'kernel': False}
