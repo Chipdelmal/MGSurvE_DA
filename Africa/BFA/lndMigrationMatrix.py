@@ -18,11 +18,11 @@ import MGSurvE as srv
 import auxiliary as aux
 ox.settings.log_console=False
 ox.settings.use_cache=True
-# matplotlib.rc('font', family='Savoye LET')
+matplotlib.rc('font', family='Ubuntu Condensed')
 
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = (
-        'sami', 'Burkina Faso', 'BFA', 
+        'zelda', 'Burkina Faso', 'BFA', 
         'Fanka', (13.1490, -1.0171)
     )
 else:
@@ -78,6 +78,7 @@ for cix in clstSrt:
     clr = BLD[matches].iloc[0]['cluster_color']
     aggCentroids.append([cix]+ctr+[clr])
 aggDF = pd.DataFrame(aggCentroids, columns=['ix', 'lon', 'lat', 'color'])
+clustersNum = aggDF.shape[0]
 ###############################################################################
 # Dump to Disk
 ###############################################################################
@@ -119,10 +120,14 @@ ax.scatter(
 )
 ax.text(
     0.99, 0.01, 
-    'Footprints: {}'.format(EngNumber(BLD.shape[0])), 
+    'Footprints: {}\nClusters: {}'.format(
+        EngNumber(BLD.shape[0]), 
+        clustersNum
+    ), 
     transform=ax.transAxes, 
     horizontalalignment='right', verticalalignment='bottom', 
-    color=STYLE_TX['color'], fontsize=STYLE_TX['size']
+    color=STYLE_TX['color'], fontsize=STYLE_TX['size'],
+    alpha=0.75
 )
 ylims = ax.get_ylim()
 ax.set_ylim(ylims[0], ylims[1]*1.0001)
@@ -131,7 +136,8 @@ ax.text(
     '{}'.format(COMMUNE), 
     transform=ax.transAxes, 
     horizontalalignment='center', verticalalignment='top', 
-    color=STYLE_TX['color'], fontsize=STYLE_TX['size']*5
+    color=STYLE_TX['color'], fontsize=STYLE_TX['size']*5,
+    alpha=0.75
 )
 ax.vlines(
     np.arange(COORDS[1]-STYLE_GD['range'], COORDS[1]+STYLE_GD['range'], STYLE_GD['step']), 
@@ -150,3 +156,11 @@ fig.savefig(
     transparent=False
 )
 plt.close('all')
+
+
+# import matplotlib.font_manager
+# from IPython.core.display import HTML
+# def make_html(fontname):
+#     return "<p>{font}: <span style='font-family:{font}; font-size: 24px;'>{font}</p>".format(font=fontname)
+# code = "\n".join([make_html(font) for font in sorted(set([f.name for f in matplotlib.font_manager.fontManager.ttflist]))])
+# HTML("<div style='column-count: 2;'>{}</div>".format(code))
