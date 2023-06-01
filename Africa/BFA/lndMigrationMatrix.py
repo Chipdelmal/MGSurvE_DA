@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import math
 from os import path
 from sys import argv
 import osmnx as ox
@@ -24,14 +25,14 @@ ox.settings.use_cache=True
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = (
         'sami', 'Burkina Faso', 'BFA', 
-        'Nouna', (12.7326,-3.8603)
+        'Basberike', (13.14717, -1.03444)
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = argv[1:]
     COORDS = tuple(map(float, COORDS.split(',')))
 (PROJ, FOOTPRINT, OVW) = (
     ccrs.PlateCarree(), True, 
-    {'dist': False, 'kernel': False}
+    {'dist': False, 'kernel': True}
 )
 ###############################################################################
 # Set Paths
@@ -64,7 +65,10 @@ else:
     migDst = pkl.load(pthDst)
 # Calculate or load kernel ----------------------------------------------------
 if OVW['kernel'] or (not path.isfile(pthMig)):
-    migMat = srv.zeroInflatedExponentialKernel(migDst, srv.AEDES_EXP_PARAMS)
+    # migMat = srv.zeroInflatedExponentialKernel(migDst, srv.AEDES_EXP_PARAMS)
+    # Inverse of mean daily dispersal distance (in meters)
+    meanDispersal = 50
+    migMat = aux.exponentialKernel(migDst, 1/meanDispersal)
 else:
     migMat = pkl.load(pthMig)
 # Calculate aggregate landscape -----------------------------------------------
