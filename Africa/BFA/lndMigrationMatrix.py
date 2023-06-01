@@ -24,15 +24,15 @@ matplotlib.rc('font', family='Ubuntu Condensed')
 
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = (
-        'sami', 'Burkina Faso', 'BFA', 
-        'Basberike', (13.14717, -1.03444)
+        'zelda', 'Burkina Faso', 'BFA', 
+        'Fanka', (13.1490, -1.0171)
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = argv[1:]
     COORDS = tuple(map(float, COORDS.split(',')))
 (PROJ, FOOTPRINT, OVW) = (
     ccrs.PlateCarree(), True, 
-    {'dist': False, 'kernel': True}
+    {'dist': True, 'kernel': True}
 )
 MEAN_DISPERSAL = 50
 ###############################################################################
@@ -68,7 +68,7 @@ else:
 if OVW['kernel'] or (not path.isfile(pthMig)):
     # migMat = srv.zeroInflatedExponentialKernel(migDst, srv.AEDES_EXP_PARAMS)
     # Inverse of mean daily dispersal distance (in meters)
-    migMat = aux.exponentialKernel(migDst, 1/meanDispersal)
+    migMat = aux.exponentialKernel(migDst, 1/MEAN_DISPERSAL)
 else:
     migMat = pkl.load(pthMig)
 # Calculate aggregate landscape -----------------------------------------------
@@ -84,6 +84,42 @@ for cix in clstSrt:
     aggCentroids.append([cix]+ctr+[clr])
 aggDF = pd.DataFrame(aggCentroids, columns=['ix', 'lon', 'lat', 'color'])
 clustersNum = aggDF.shape[0]
+###############################################################################
+# Plot Matrices
+###############################################################################
+(SZE, DPI) = (10, 300)
+(fig, ax) = plt.subplots(figsize=(SZE, SZE))
+ax.matshow(
+    migDst, cmap=aux.colorPaletteFromHexList(['#ffffff', '#ff0054'])
+)
+ax.axis('off')
+fig.savefig(
+    path.join(paths['data'], CODE, COMMUNE+'_DST.png'), 
+    dpi=DPI, transparent=False, bbox_inches='tight', pad_inches=0
+)
+plt.close('all')
+(fig, ax) = plt.subplots(figsize=(SZE, SZE))
+ax.matshow(
+    migMat, cmap=aux.colorPaletteFromHexList(['#ffffff', '#3a0ca3']), 
+    vmin=0, vmax=0.1
+)
+ax.axis('off')
+fig.savefig(
+    path.join(paths['data'], CODE, COMMUNE+'_MIG.png'), 
+    dpi=DPI, transparent=False, bbox_inches='tight', pad_inches=0
+)
+plt.close('all')
+(fig, ax) = plt.subplots(figsize=(SZE, SZE))
+ax.matshow(
+    aggMat, cmap=aux.colorPaletteFromHexList(['#ffffff', '#7776bc']), 
+    vmin=0, vmax=0.1
+)
+ax.axis('off')
+fig.savefig(
+    path.join(paths['data'], CODE, COMMUNE+'_MAG.png'), 
+    dpi=DPI, transparent=False, bbox_inches='tight', pad_inches=0
+)
+plt.close('all')
 ###############################################################################
 # Dump to Disk
 ###############################################################################

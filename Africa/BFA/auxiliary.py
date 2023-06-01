@@ -4,6 +4,9 @@
 import numpy as np
 from math import exp
 from sklearn.preprocessing import normalize
+import matplotlib.colors as mcolors
+from matplotlib.colors import LinearSegmentedColormap
+
 
 def userPaths(user):
     if user=='sami':
@@ -32,3 +35,13 @@ def exponentialKernel(distMat, decay):
                 migrMat[i][j] = 0
     tauN = normalize(migrMat, axis=1, norm='l1')
     return tauN
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
+def colorPaletteFromHexList(clist):
+    c = mcolors.ColorConverter().to_rgb
+    clrs = [c(i) for i in clist]
+    rvb = mcolors.LinearSegmentedColormap.from_list("", clrs)
+    return rvb
