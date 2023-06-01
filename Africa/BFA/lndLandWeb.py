@@ -18,7 +18,7 @@ import auxiliary as aux
 import constants as cst
 ox.settings.log_console=False
 ox.settings.use_cache=True
-# matplotlib.rc('font', family='Savoye LET')
+matplotlib.rc('font', family='Ubuntu Condensed')
 
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST, EPS, MIN) = (
@@ -106,7 +106,8 @@ ax.text(
     ), 
     transform=ax.transAxes, 
     horizontalalignment='right', verticalalignment='bottom', 
-    color=STYLE_TX['color'], fontsize=STYLE_TX['size']
+    color=STYLE_TX['color'], fontsize=STYLE_TX['size'],
+    alpha=0.75
 )
 ylims = ax.get_ylim()
 ax.set_ylim(ylims[0], ylims[1]*1.0001)
@@ -115,7 +116,8 @@ ax.text(
     '{}'.format(COMMUNE), 
     transform=ax.transAxes, 
     horizontalalignment='center', verticalalignment='top', 
-    color=STYLE_TX['color'], fontsize=STYLE_TX['size']*5
+    color=STYLE_TX['color'], fontsize=STYLE_TX['size']*5,
+    alpha=0.75
 )
 ax.vlines(
     np.arange(COORDS[1]-STYLE_GD['range'], COORDS[1]+STYLE_GD['range'], STYLE_GD['step']), 
