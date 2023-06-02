@@ -7,6 +7,7 @@ CORES = 16
 ###############################################################################
 import os
 import math
+import osmnx as ox
 os.environ["OMP_NUM_THREADS"] = str(CORES)
 os.environ["OPENBLAS_NUM_THREADS"] = str(CORES)
 os.environ["MKL_NUM_THREADS"] = str(CORES)
@@ -32,7 +33,7 @@ matplotlib.rc('font', family='Ubuntu Condensed')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Fanka', (13.1490, -1.0171), 1000
+        'Fanka', (13.1490, -1.0171), 10
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS) = argv[1:]
@@ -60,6 +61,10 @@ paths = aux.userPaths(USR)
 ###############################################################################
 # Read from Disk
 ###############################################################################
+(BLD, NTW) = (
+    pkl.load(path.join(paths['data'], CODE, COMMUNE+'_BLD.bz')),
+    pkl.load(path.join(paths['data'], CODE, COMMUNE+'_NTW.bz'))
+)
 (MIG, MAG, LAG) = (
     pkl.load(path.join(paths['data'], CODE, COMMUNE+'_MIG.bz')),
     pkl.load(path.join(paths['data'], CODE, COMMUNE+'_AGG.bz')),
@@ -136,3 +141,49 @@ srv.dumpLandscape(
     '{}-{}_{}_LND'.format(COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4)),
     fExt='pkl'
 )
+###############################################################################
+# Plot Results
+###############################################################################
+(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
+lnd = srv.loadLandscape(
+    path.join(
+        paths['data'], CODE), 
+        '{}-{}_{}_LND'.format(COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4)
+    ),
+    fExt='pkl'
+)
+# Landscape -------------------------------------------------------------------
+G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
+(fig, ax) = ox.plot_graph(
+    G, node_size=0, figsize=(40, 40), show=False,
+    bgcolor=STYLE_BG['color'], edge_color=STYLE_RD['color'], 
+    edge_alpha=STYLE_RD['alpha'], edge_linewidth=STYLE_RD['width']
+)
+(fig, ax) = ox.plot_footprints(
+    BLD, ax=ax, save=False, show=False, close=False,
+    bgcolor=STYLE_BG['color'], color=STYLE_BD['color'], 
+    alpha=STYLE_BD['alpha']
+)
+(fig, ax) = ox.plot_footprints(
+    BLD, ax=ax, save=False, show=False, close=False,
+    bgcolor=STYLE_BG['color'], alpha=0.65,
+    color=list(BLD['cluster_color']), 
+)
+# (fig, ax) = (plt.figure(figsize=(15, 15)), plt.axes(projection=ccrs.PlateCarree()))
+# lnd.plotSites(fig, ax, size=75)
+# lnd.plotMigrationNetwork(fig, ax, lineColor='#ffffff', lineWidth=1, alphaMin=.25, alphaAmplitude=1000, zorder=20)
+for (i, site) in enumerate(lnd.trapsCoords):
+    ax.scatter(
+        site[0], site[1], 
+        marker="X", color='#f7258548', 
+        s=1000, zorder=25, edgecolors='w'
+    )
+# srv.plotClean(fig, ax, bbox=lnd.landLimits)
+fig.savefig(
+    path.join(
+        paths['data'], CODE, 
+        '{}-{}_{}_SRV'.format(COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4))
+    ),
+    facecolor='w', bbox_inches='tight', pad_inches=0.2, dpi=400
+)
+plt.close('all')
