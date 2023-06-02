@@ -38,7 +38,6 @@ do
             lonlat="${arr[1]}"
             echo -e "${RD}* Processing $name ($REP)...${NC}"
             # Launch scripts --------------------------------------------------
-            # echo -e "${LG}\t* Optimizing...${NC}"
             python srvOptimize.py $USR 'Burkina Faso' 'BFA' "$name" "$lonlat" "1000" "$FRACTION" "$REP"
         done
     done
