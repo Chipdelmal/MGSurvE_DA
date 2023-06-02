@@ -36,9 +36,9 @@ if srv.isNotebook():
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = argv[1:]
-    (COORDS, GENS, FRACTION) = (
+    (COORDS, GENS, FRACTION, REP) = (
         tuple(map(float, COORDS.split(','))),
-        int(GENS), int(FRACTION)
+        int(GENS), int(FRACTION), int(REP)
     )
 (PROJ, FOOTPRINT, OVW, VERBOSE) = (
     ccrs.PlateCarree(), True, 
@@ -132,12 +132,7 @@ outer = np.mean
 ###############################################################################
 # Exporting Results
 ############################################################################### 
-fNameBase = '{}-{}_{}-{}'.format(
-    COMMUNE, 
-    str(SITES_NUM).zfill(4), 
-    str(TRPS_NUM).zfill(4),
-    str(REP).zfill(2)
-)
+fNameBase = '{}-{:04d}_{:04d}-{:02d}'.format(COMMUNE, SITES_NUM, TRPS_NUM, REP)
 srv.exportLog(
     logbook, path.join(paths['data'], CODE), fNameBase+'_LOG'
 )

@@ -25,17 +25,17 @@ cities[8]='Kaya;13.0801,-1.0700;5500;0.02;3'
 ###############################################################################
 # Loop through cities
 ###############################################################################
-for city in "${cities[@]}"
+for FRACTION in 50 25 20 15 10 5
 do
     for REP in {0..9}
     do
-        for FRACTION in 50 25 20 15 10 5
+        for city in "${cities[@]}"
         do
             # Split elements of array -----------------------------------------
             IFS=";" read -r -a arr <<< "${city}"
             name="${arr[0]}"
             lonlat="${arr[1]}"
-            echo -e "${RD}* Processing $name ($REP)...${NC}"
+            echo -e "${RD}* Processing $name ($FRACTION:$REP)...${NC}"
             # Launch scripts --------------------------------------------------
             python srvOptimize.py "$USR" "Burkina Faso" "BFA" "$name" "$lonlat"\
                 "1000" "$FRACTION" "$REP"
