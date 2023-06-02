@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import math
@@ -34,7 +34,7 @@ else:
     ccrs.PlateCarree(), True, 
     {'dist': True, 'kernel': True}
 )
-MEAN_DISPERSAL = 50
+MEAN_DISPERSAL = 300
 ###############################################################################
 # Set Paths
 ###############################################################################
@@ -101,7 +101,7 @@ plt.close('all')
 (fig, ax) = plt.subplots(figsize=(SZE, SZE))
 ax.matshow(
     migMat, cmap=aux.colorPaletteFromHexList(['#ffffff', '#3a0ca3']), 
-    vmin=0, vmax=0.1
+    vmin=0, vmax=0.05
 )
 ax.axis('off')
 fig.savefig(
@@ -112,7 +112,7 @@ plt.close('all')
 (fig, ax) = plt.subplots(figsize=(SZE, SZE))
 ax.matshow(
     aggMat, cmap=aux.colorPaletteFromHexList(['#ffffff', '#7776bc']), 
-    vmin=0, vmax=0.1
+    vmin=0, vmax=0.05
 )
 ax.axis('off')
 fig.savefig(
@@ -126,7 +126,7 @@ plt.close('all')
 pkl.dump(migDst, pthDst, compression='bz2')
 pkl.dump(migMat, pthMig, compression='bz2')
 pkl.dump(aggMat, pthAgg, compression='bz2')
-aggDF.to_csv(pthAct)
+aggDF.to_csv(pthAct, index=False)
 ###############################################################################
 # Map
 ###############################################################################
