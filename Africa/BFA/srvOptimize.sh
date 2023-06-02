@@ -18,18 +18,28 @@ cities[1]='Reo;12.3201,-2.4753;1000;0.02;1'
 cities[2]='Fanka;13.1490,-1.0171;2500;0.0175;3'
 cities[3]='Manga;11.6679,-1.0760;2000;0.0225;3'
 cities[4]='Nouna;12.7326,-3.8603;2000;0.018;3'
+cities[5]='Niangoloko;10.2826803,-4.9240132;4500;0.02;5'
+cities[6]='Banfora;10.6376,-4.7526;4000;0.0175;3'
+cities[7]='Koudougou;12.2560,-2.3588;5000;0.02;3'
+cities[8]='Kaya;13.0801,-1.0700;5500;0.02;3'
 
 ###############################################################################
 # Loop through cities
 ###############################################################################
 for city in "${cities[@]}"
 do
-    # Split elements of array -------------------------------------------------
-    IFS=";" read -r -a arr <<< "${city}"
-    name="${arr[0]}"
-    lonlat="${arr[1]}"
-    echo -e "${RD}* Processing $name...${NC}"
-    # Launch scripts ----------------------------------------------------------
-    # echo -e "${LG}\t* Optimizing...${NC}"
-    python srvOptimize.py $USR 'Burkina Faso' 'BFA' "$name" "$lonlat" "1000"
+    for FRACTION in 50 25 20 15 10 5
+    do
+        for REP in {0..9}
+        do
+            # Split elements of array -----------------------------------------
+            IFS=";" read -r -a arr <<< "${city}"
+            name="${arr[0]}"
+            lonlat="${arr[1]}"
+            echo -e "${RD}* Processing $name ($REP)...${NC}"
+            # Launch scripts --------------------------------------------------
+            # echo -e "${LG}\t* Optimizing...${NC}"
+            python srvOptimize.py $USR 'Burkina Faso' 'BFA' "$name" "$lonlat" "1000" "$FRACTION" "$REP"
+        done
+    done
 done

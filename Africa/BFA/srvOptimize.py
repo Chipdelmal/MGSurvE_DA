@@ -7,12 +7,12 @@ CORES = 16
 ###############################################################################
 import os
 import math
-import osmnx as ox
 os.environ["OMP_NUM_THREADS"] = str(CORES)
 os.environ["OPENBLAS_NUM_THREADS"] = str(CORES)
 os.environ["MKL_NUM_THREADS"] = str(CORES)
 os.environ["VECLIB_MAXIMUM_THREADS"] = str(CORES)
 os.environ["NUMEXPR_NUM_THREADS"] = str(CORES)
+import osmnx as ox
 from os import path
 from sys import argv
 from copy import deepcopy
@@ -31,17 +31,19 @@ import constants as cst
 matplotlib.rc('font', family='Ubuntu Condensed')
 
 if srv.isNotebook():
-    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS) = (
+    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Fanka', (13.1490, -1.0171), 10
+        'Basberike', (13.14717,-1.03444), 100, 10, 0
     )
 else:
-    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS) = argv[1:]
+    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = argv[1:]
     COORDS = tuple(map(float, COORDS.split(',')))
     GENS = int(GENS)
-(PROJ, FOOTPRINT, OVW) = (
+    FRACTION = int(FRACTION)
+(PROJ, FOOTPRINT, OVW, VERBOSE) = (
     ccrs.PlateCarree(), True, 
-    {'dist': True, 'kernel': True}
+    {'dist': False, 'kernel': False},
+    False
 )
 MEAN_DISPERSAL = 300
 ###############################################################################
@@ -83,7 +85,7 @@ CNTR = [i[0]+(i[1]-i[0])/2 for i in BBOX]
 ###############################################################################
 # Traps' Data
 ###############################################################################
-TRPS_NUM = math.floor(SITES_NUM/10)
+TRPS_NUM = math.floor(SITES_NUM/FRACTION)
 (initLon, initLat) = (
     uniform(BBOX[0][0], BBOX[0][1], TRPS_NUM), 
     uniform(BBOX[0][0], BBOX[0][1], TRPS_NUM)
@@ -114,7 +116,6 @@ POP_SIZE = int(10*(lnd.trapsNumber*1.5))
     {'mutpb': 0.375, 'indpb': 0.50},
     {'tSize': 3}
 )
-VERBOSE = True
 lndGA = deepcopy(lnd)
 # Reducing the bbox for init sampling -----------------------------------------
 redFract = .25
@@ -125,7 +126,7 @@ bboxRed = [(i[0]+r, i[1]-r) for (i, r) in zip(bbox,reduction)]
 ############################################################################### 
 outer = np.mean
 (lnd, logbook) = srv.optimizeDiscreteTrapsGA(
-    lndGA, pop_size=POP_SIZE, generations=GENS, verbose=True,
+    lndGA, pop_size=POP_SIZE, generations=GENS, verbose=VERBOSE,
     mating_params=MAT, mutation_params=MUT, selection_params=SEL,
     fitFuns={'inner': np.sum, 'outer': outer}
 )
@@ -134,11 +135,17 @@ outer = np.mean
 ############################################################################### 
 srv.exportLog(
     logbook, path.join(paths['data'], CODE), 
-    '{}-{}_{}_LOG'.format(COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4))
+    '{}-{}_{}_-{}_LOG'.format(
+        COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4),
+        str(REP).zfill(2)
+    )
 )
 srv.dumpLandscape(
     lnd, path.join(paths['data'], CODE), 
-    '{}-{}_{}_LND'.format(COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4)),
+    '{}-{}_{}-{}_LND'.format(
+        COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4),
+        str(REP).zfill(2)
+    ),
     fExt='pkl'
 )
 ###############################################################################
@@ -148,14 +155,20 @@ srv.dumpLandscape(
 lnd = srv.loadLandscape(
     path.join(
         paths['data'], CODE), 
-        '{}-{}_{}_LND'.format(COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4)
+        '{}-{}_{}-{}_LND'.format(
+            COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4),
+            str(REP).zfill(2)
     ),
     fExt='pkl'
 )
 # Landscape -------------------------------------------------------------------
+(fig, ax) = (
+    plt.figure(figsize=(15, 15), facecolor=STYLE_BG['color']), 
+    plt.axes(projection=ccrs.PlateCarree())
+)
 G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
 (fig, ax) = ox.plot_graph(
-    G, node_size=0, figsize=(40, 40), show=False,
+    G, ax, node_size=0, figsize=(40, 40), show=False,
     bgcolor=STYLE_BG['color'], edge_color=STYLE_RD['color'], 
     edge_alpha=STYLE_RD['alpha'], edge_linewidth=STYLE_RD['width']
 )
@@ -169,20 +182,27 @@ G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
     bgcolor=STYLE_BG['color'], alpha=0.65,
     color=list(BLD['cluster_color']), 
 )
-# (fig, ax) = (plt.figure(figsize=(15, 15)), plt.axes(projection=ccrs.PlateCarree()))
+lnd.updateTrapsRadii([1])
 # lnd.plotSites(fig, ax, size=75)
-# lnd.plotMigrationNetwork(fig, ax, lineColor='#ffffff', lineWidth=1, alphaMin=.25, alphaAmplitude=1000, zorder=20)
-for (i, site) in enumerate(lnd.trapsCoords):
-    ax.scatter(
-        site[0], site[1], 
-        marker="X", color='#f7258548', 
-        s=1000, zorder=25, edgecolors='w'
-    )
+lnd.plotTraps(
+    fig, ax, 
+    size=500, zorders=(30, 25), transparencyHex='33', 
+    proj=ccrs.PlateCarree()
+)
+# lnd.plotMigrationNetwork(
+#     fig, ax, 
+#     lineColor='#ffffff', lineWidth=1, 
+#     alphaMin=.125, alphaAmplitude=10000, zorder=20
+# )
+ax.set_facecolor(STYLE_BG['color'])
 # srv.plotClean(fig, ax, bbox=lnd.landLimits)
 fig.savefig(
     path.join(
         paths['data'], CODE, 
-        '{}-{}_{}_SRV'.format(COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4))
+        '{}-{}_{}-{}_SRV'.format(
+            COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4),
+            str(REP).zfill(2)
+        )
     ),
     facecolor='w', bbox_inches='tight', pad_inches=0.2, dpi=400
 )
