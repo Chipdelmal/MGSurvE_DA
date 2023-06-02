@@ -1,17 +1,17 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-CORES = 16
+CORES = 32
 ###############################################################################
 # Load libraries and limit cores
 ###############################################################################
 import os
-import math
 os.environ["OMP_NUM_THREADS"] = str(CORES)
 os.environ["OPENBLAS_NUM_THREADS"] = str(CORES)
 os.environ["MKL_NUM_THREADS"] = str(CORES)
 os.environ["VECLIB_MAXIMUM_THREADS"] = str(CORES)
 os.environ["NUMEXPR_NUM_THREADS"] = str(CORES)
+import math
 import osmnx as ox
 from os import path
 from sys import argv
@@ -24,7 +24,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from numpy.random import uniform
-import MoNeT_MGDrivE as monet
 import MGSurvE as srv
 import auxiliary as aux
 import constants as cst
@@ -33,19 +32,19 @@ matplotlib.rc('font', family='Ubuntu Condensed')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Basberike', (13.14717,-1.03444), 100, 10, 0
+        'Basberike', (13.14717,-1.03444), 100, 50, 0
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = argv[1:]
-    COORDS = tuple(map(float, COORDS.split(',')))
-    GENS = int(GENS)
-    FRACTION = int(FRACTION)
+    (COORDS, GENS, FRACTION) = (
+        tuple(map(float, COORDS.split(','))),
+        int(GENS), int(FRACTION)
+    )
 (PROJ, FOOTPRINT, OVW, VERBOSE) = (
     ccrs.PlateCarree(), True, 
     {'dist': False, 'kernel': False},
     False
 )
-MEAN_DISPERSAL = 300
 ###############################################################################
 # Set Paths
 ###############################################################################
@@ -96,7 +95,7 @@ traps = pd.DataFrame({
     'lon': initLon, 'lat': initLat, 
     't': [0]*TRPS_NUM, 'f': [0]*TRPS_NUM
 })
-tKer = {0: {'kernel': srv.exponentialDecay, 'params': {'A': 0.5, 'b': 0.041674}}}
+tKer = {0:{'kernel': srv.exponentialDecay, 'params': {'A': 0.5, 'b': 0.041674}}}
 ###############################################################################
 # Setting Landscape Up
 ###############################################################################
@@ -133,19 +132,17 @@ outer = np.mean
 ###############################################################################
 # Exporting Results
 ############################################################################### 
+fNameBase = '{}-{}_{}-{}'.format(
+    COMMUNE, 
+    str(SITES_NUM).zfill(4), 
+    str(TRPS_NUM).zfill(4),
+    str(REP).zfill(2)
+)
 srv.exportLog(
-    logbook, path.join(paths['data'], CODE), 
-    '{}-{}_{}_-{}_LOG'.format(
-        COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4),
-        str(REP).zfill(2)
-    )
+    logbook, path.join(paths['data'], CODE), fNameBase+'_LOG'
 )
 srv.dumpLandscape(
-    lnd, path.join(paths['data'], CODE), 
-    '{}-{}_{}-{}_LND'.format(
-        COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4),
-        str(REP).zfill(2)
-    ),
+    lnd, path.join(paths['data'], CODE), fNameBase+'_LND',
     fExt='pkl'
 )
 ###############################################################################
@@ -153,14 +150,10 @@ srv.dumpLandscape(
 ###############################################################################
 (STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
 lnd = srv.loadLandscape(
-    path.join(
-        paths['data'], CODE), 
-        '{}-{}_{}-{}_LND'.format(
-            COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4),
-            str(REP).zfill(2)
-    ),
+    path.join(paths['data'], CODE), fNameBase+'_LND',
     fExt='pkl'
 )
+lnd.updateTrapsRadii([1])
 # Landscape -------------------------------------------------------------------
 (fig, ax) = (
     plt.figure(figsize=(15, 15), facecolor=STYLE_BG['color']), 
@@ -182,28 +175,21 @@ G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
     bgcolor=STYLE_BG['color'], alpha=0.65,
     color=list(BLD['cluster_color']), 
 )
-lnd.updateTrapsRadii([1])
-# lnd.plotSites(fig, ax, size=75)
 lnd.plotTraps(
     fig, ax, 
     size=500, zorders=(30, 25), transparencyHex='33', 
     proj=ccrs.PlateCarree()
 )
+# lnd.plotSites(fig, ax, size=75)
 # lnd.plotMigrationNetwork(
 #     fig, ax, 
 #     lineColor='#ffffff', lineWidth=1, 
 #     alphaMin=.125, alphaAmplitude=10000, zorder=20
 # )
-ax.set_facecolor(STYLE_BG['color'])
 # srv.plotClean(fig, ax, bbox=lnd.landLimits)
+ax.set_facecolor(STYLE_BG['color'])
 fig.savefig(
-    path.join(
-        paths['data'], CODE, 
-        '{}-{}_{}-{}_SRV'.format(
-            COMMUNE, str(SITES_NUM).zfill(4), str(TRPS_NUM).zfill(4),
-            str(REP).zfill(2)
-        )
-    ),
+    path.join(paths['data'], CODE, fNameBase+'_SRV'),
     facecolor='w', bbox_inches='tight', pad_inches=0.2, dpi=400
 )
 plt.close('all')
