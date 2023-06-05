@@ -185,6 +185,7 @@ lnd.plotTraps(
 ax.set_facecolor(STYLE_BG['color'])
 fig.savefig(
     path.join(paths['data'], CODE, fNameBase+'_SRV'),
-    facecolor='w', bbox_inches='tight', pad_inches=0.2, dpi=400
+    transparent=False, facecolor=STYLE_BG['color'],
+    bbox_inches='tight', pad_inches=0, dpi=400
 )
 plt.close('all')

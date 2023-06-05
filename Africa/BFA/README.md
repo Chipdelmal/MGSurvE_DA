@@ -26,6 +26,7 @@ mamba install -c conda-forge deap
 mamba install libpysal -y
 mamba install cartopy -y
 mamba install -c conda-forge osmnx
+mamba install -c install -c conda-forge ffmpeg
 pip install engineering-notation
 pip install MGSurvE
 ```
