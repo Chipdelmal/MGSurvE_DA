@@ -1,1 +1,1 @@
-# MGSurvE Applications to African Landscapes
+# African Landscapes
