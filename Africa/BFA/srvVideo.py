@@ -29,7 +29,7 @@ matplotlib.rc('font', family='Ubuntu Condensed')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Basberike', (13.14717,-1.03444), 1000, 50, 0
+        'Niangoloko', (10.2826803,-4.9240132), 4500, 50, 0
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = argv[1:]
@@ -64,8 +64,7 @@ paths = aux.userPaths(USR)
     pkl.load(path.join(paths['data'], CODE, COMMUNE+'_BLD.bz')),
     pkl.load(path.join(paths['data'], CODE, COMMUNE+'_NTW.bz'))
 )
-(MIG, MAG, LAG) = (
-    pkl.load(path.join(paths['data'], CODE, COMMUNE+'_MIG.bz')),
+(MAG, LAG) = (
     pkl.load(path.join(paths['data'], CODE, COMMUNE+'_AGG.bz')),
     pd.read_csv(pthAct)
 )
@@ -157,7 +156,7 @@ for gen in range(GENS)[0:]:
         zorders=(30, 25), size=750, transparencyHex='99', proj=PROJ
     )
     ax.text(
-        0.9, 0.9, '{:.1f}'.format(fitness),
+        0.9, 0.9, '{:.2f}'.format(fitness),
         horizontalalignment='right', verticalalignment='center',
         fontsize=70, color='#ffffff22', rotation=0,
         transform=ax.transAxes, zorder=-10
@@ -192,9 +191,12 @@ for gen in range(GENS)[0:]:
 #       -vcodec libx264 -preset veryslow -crf 15 
 #       -pix_fmt yuv420p OUTPUT_PATH.mp4"
 ############################################################################### 
-fmpegBse = "ffmpeg -start_number 0 -r 24 -f image2 -s 1920x1080 -i {}/%04d.png ".format(OUT_VID)
-fmpegMid = "-vf pad=ceil(iw/2)*2:ceil(ih/2)*2 -pix_fmt yuv420p {}/{}.mp4 -y".format(OUT_VID, fNameBase)
+fmpegBse = "ffmpeg -start_number 0 -r 16 -f image2 -s 1920x1080 -i {}/%04d.png ".format(OUT_VID)
+fmpegMid = "-vf pad=ceil(iw/2)*2:ceil(ih/2)*2 -pix_fmt yuv420p {}/{}.mp4 -y".format(
+    path.abspath(os.path.join(OUT_VID, os.pardir)), 
+    fNameBase
+)
 fmpegFll = fmpegBse+fmpegMid
 process = subprocess.Popen(fmpegFll.split(), stdout=subprocess.PIPE)
 (output, error) = process.communicate()
-    
+
