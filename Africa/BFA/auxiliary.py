@@ -19,6 +19,11 @@ def userPaths(user):
             '/RAID5/marshallShare/MGSurvE_DA/', 
             '/RAID5/marshallShare/MGSurvE_DA/'
         )
+    elif user=='link':
+        (DTA_ROOT, SIM_ROOT) = (
+            '/home/sanchez.hmsc/MGSurvE_Africa/', 
+            '/home/sanchez.hmsc/MGSurvE_Africa/'
+        )
     return {'data': DTA_ROOT, 'sim': SIM_ROOT}
 
 
