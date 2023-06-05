@@ -22,7 +22,6 @@ def userPaths(user):
     return {'data': DTA_ROOT, 'sim': SIM_ROOT}
 
 
-
 def exponentialKernel(distMat, decay):
     coordsNum = len(distMat)
     migrMat = np.empty((coordsNum, coordsNum))
@@ -36,12 +35,16 @@ def exponentialKernel(distMat, decay):
     tauN = normalize(migrMat, axis=1, norm='l1')
     return tauN
 
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 
 def colorPaletteFromHexList(clist):
     c = mcolors.ColorConverter().to_rgb
     clrs = [c(i) for i in clist]
     rvb = mcolors.LinearSegmentedColormap.from_list("", clrs)
     return rvb
+
+
+def idStringToArray(string, discrete=True):
+    if discrete:
+        return np.array([int(i) for i in string[1:-1].split(',')])
+    else:
+        return np.array([float(i) for i in string[1:-1].split(',')])
