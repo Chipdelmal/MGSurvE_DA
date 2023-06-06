@@ -41,6 +41,9 @@ Additional information for these studies.
 * https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4067626/
 * https://www.nature.com/articles/s41467-022-28419-0#ref-CR41
 * https://www.sciencedirect.com/science/article/pii/S0075951113001011?via%3Dihub#fig0005
+* https://pubmed.ncbi.nlm.nih.gov/8887330/
+
+
 ## Clustering and Aggregation
 
 * https://geoffboeing.com/2014/08/clustering-to-reduce-spatial-data-set-size/
