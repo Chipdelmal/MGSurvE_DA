@@ -37,14 +37,14 @@ Additional information for these studies.
 
 ## Mosquito Movement
 
-* https://parasitesandvectors.biomedcentral.com/articles/10.1186/s13071-019-3640-3
-* https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4067626/
-* https://www.nature.com/articles/s41467-022-28419-0#ref-CR41
-* https://www.sciencedirect.com/science/article/pii/S0075951113001011?via%3Dihub#fig0005
-* https://pubmed.ncbi.nlm.nih.gov/8887330/
+* Mosquito Mean Dispersal: https://www.sciencedirect.com/science/article/pii/S0075951113001011?via%3Dihub#fig0005
+* Long Dispersal: https://pubmed.ncbi.nlm.nih.gov/8887330/
+* MRR in Indonesia: https://parasitesandvectors.biomedcentral.com/articles/10.1186/s13071-019-3640-3
+* MRR in Burkina Faso: https://www.nature.com/articles/s41467-022-28419-0#ref-CR41
+* Global MRR Assembly: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4067626/
 
 
 ## Clustering and Aggregation
 
-* https://geoffboeing.com/2014/08/clustering-to-reduce-spatial-data-set-size/
-* https://stackoverflow.com/questions/34579213/dbscan-for-clustering-of-geographic-location-data
+* Blogpost on DBSCAN: https://geoffboeing.com/2014/08/clustering-to-reduce-spatial-data-set-size/
+* DBSCAN Haversine: https://stackoverflow.com/questions/34579213/dbscan-for-clustering-of-geographic-location-data
