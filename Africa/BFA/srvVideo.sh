@@ -29,7 +29,7 @@ cities[5]='Niangoloko;10.2826803,-4.9240132;4500;0.02;5'
 for FRACTION in 50
 do
     # for REP in {0..9}
-    for REP in 0
+    for REP in {0..1}
     do
         for city in "${cities[@]}"
         do

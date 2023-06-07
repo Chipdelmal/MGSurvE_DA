@@ -37,9 +37,9 @@ do
     neighbors="${arr[4]}"
     echo -e "${RD}* Processing $name...${NC}"
     # Launch scripts ----------------------------------------------------------
-    echo -e "${LG}\t* Clustering...${NC}"
-    python lndLandWeb.py $USR 'Burkina Faso' 'BFA'\
-        "$name" "$lonlat" "$distance" "$eps" "$neighbors"
+    # echo -e "${LG}\t* Clustering...${NC}"
+    # python lndLandWeb.py $USR 'Burkina Faso' 'BFA'\
+    #     "$name" "$lonlat" "$distance" "$eps" "$neighbors"
     echo -e "${LG}\t* Aggregating...${NC}"
     python lndMigrationMatrix.py $USR 'Burkina Faso' 'BFA'\
         "$name" "$lonlat"

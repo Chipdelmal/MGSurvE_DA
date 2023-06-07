@@ -5,8 +5,7 @@ import math
 from os import path
 from sys import argv
 import osmnx as ox
-from shapely import wkt
-from random import shuffle, uniform
+from haversine import haversine, Unit
 from engineering_notation import EngNumber
 import cartopy.crs as ccrs
 import compress_pickle as pkl
@@ -32,7 +31,7 @@ else:
     COORDS = tuple(map(float, COORDS.split(',')))
 (PROJ, FOOTPRINT, OVW) = (
     ccrs.PlateCarree(), True, 
-    {'dist': True, 'kernel': True}
+    {'dist': False, 'kernel': False}
 )
 MEAN_DISPERSAL = 123.182
 ###############################################################################
@@ -72,7 +71,7 @@ if OVW['kernel'] or (not path.isfile(pthMig)):
 else:
     migMat = pkl.load(pthMig)
 # Calculate aggregate landscape -----------------------------------------------
-aggMat = monet.aggregateLandscape(migMat, clusters, type=2)
+aggMat = monet.aggregateLandscape(migMat, clusters, type=0)
 ###############################################################################
 # Aggregation Centroids
 ###############################################################################
@@ -85,12 +84,24 @@ for cix in clstSrt:
 aggDF = pd.DataFrame(aggCentroids, columns=['ix', 'lon', 'lat', 'color'])
 clustersNum = aggDF.shape[0]
 ###############################################################################
+# Re-order matrix
+###############################################################################
+corner = np.min(lonLats, axis=0)
+distSort = [haversine(corner, i) for i in lonLats]
+distAgg = [haversine(corner, i) for i in np.array(aggDF[['lon', 'lat']])]
+aggDF['dist'] = distAgg
+aggDistSort = [list(aggDF['dist'])[i] for i in clusters]
+# Generate sorting ------------------------------------------------------------
+clstSort = list(np.lexsort((np.arange(0, len(clusters)), distSort, clusters)))
+aggrSort = list(np.lexsort((np.arange(0, clustersNum), distAgg)))
+###############################################################################
 # Plot Matrices
 ###############################################################################
 (SZE, DPI) = (10, 300)
 (fig, ax) = plt.subplots(figsize=(SZE, SZE))
 ax.matshow(
-    migDst, cmap=aux.colorPaletteFromHexList(['#ffffff', '#ff0054'])
+    aux.reArrangeMatrix(migDst, clstSort), 
+    cmap=aux.colorPaletteFromHexList(['#ffffff', '#ff0054'])
 )
 ax.axis('off')
 fig.savefig(
@@ -100,7 +111,8 @@ fig.savefig(
 plt.close('all')
 (fig, ax) = plt.subplots(figsize=(SZE, SZE))
 ax.matshow(
-    migMat, cmap=aux.colorPaletteFromHexList(['#ffffff', '#3a0ca3']), 
+    aux.reArrangeMatrix(migMat, clstSort), 
+    cmap=aux.colorPaletteFromHexList(['#ffffff', '#3a0ca3']), 
     vmin=0, vmax=0.05
 )
 ax.axis('off')
@@ -111,7 +123,8 @@ fig.savefig(
 plt.close('all')
 (fig, ax) = plt.subplots(figsize=(SZE, SZE))
 ax.matshow(
-    aggMat, cmap=aux.colorPaletteFromHexList(['#ffffff', '#7776bc']), 
+    aggMat, 
+    cmap=aux.colorPaletteFromHexList(['#ffffff', '#7776bc']), 
     vmin=0, vmax=0.05
 )
 ax.axis('off')
