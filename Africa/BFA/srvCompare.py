@@ -133,11 +133,17 @@ plt.close('all')
 # Plot Optimal
 ###############################################################################
 (STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
+(FIG_SIZE, PROJ, BSCA) = ((15, 15), ccrs.PlateCarree(), 0.001)
+(PAD, DPI) = (0, 300)
 lnd = lnds[minIx]
 lnd.updateTrapsRadii([1])
+BBOX = (
+    (lnd.landLimits[0][0]-BSCA, lnd.landLimits[0][1]+BSCA),
+    (lnd.landLimits[1][0]-BSCA, lnd.landLimits[1][1]+BSCA)
+)
 # Landscape -------------------------------------------------------------------
 (fig, ax) = (
-    plt.figure(figsize=(15, 15), facecolor=STYLE_BG['color']), 
+    plt.figure(figsize=FIG_SIZE, facecolor=STYLE_BG['color']), 
     plt.axes(projection=ccrs.PlateCarree())
 )
 G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
@@ -167,11 +173,11 @@ lnd.plotTraps(
 #     lineColor='#ffffff', lineWidth=1, 
 #     alphaMin=.125, alphaAmplitude=10000, zorder=20
 # )
-# srv.plotClean(fig, ax, bbox=lnd.landLimits)
+srv.plotClean(fig, ax, bbox=lnd.landLimits)
 ax.set_facecolor(STYLE_BG['color'])
 fig.savefig(
-    path.join(paths['data'], CODE, fNameBase+'_OPT'),
+    path.join(paths['data'], CODE, fNameBase[:-2]+'_OPT'),
     transparent=False, facecolor=STYLE_BG['color'],
-    bbox_inches='tight', pad_inches=0, dpi=400
+    bbox_inches='tight', pad_inches=PAD, dpi=DPI
 )
 plt.close('all')
