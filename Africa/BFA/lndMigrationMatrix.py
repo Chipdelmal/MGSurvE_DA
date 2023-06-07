@@ -31,7 +31,7 @@ else:
     COORDS = tuple(map(float, COORDS.split(',')))
 (PROJ, FOOTPRINT, OVW) = (
     ccrs.PlateCarree(), True, 
-    {'dist': False, 'kernel': False}
+    {'dist': True, 'kernel': True}
 )
 MEAN_DISPERSAL = 123.182
 ###############################################################################

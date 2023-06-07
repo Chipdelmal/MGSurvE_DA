@@ -82,7 +82,7 @@ srv.makeFolder(OUT_VID)
 # Plot blank landscape
 ###############################################################################
 (STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
-(PAD, DPI) = (0, 300)
+(PAD, DPI) = (0, 250)
 lnd.updateTrapsRadii([1])
 bbox = lnd.getBoundingBox()
 trpMsk = srv.genFixedTrapsMask(lnd.trapsFixed)

@@ -1,20 +1,15 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-CORES = 32
 ###############################################################################
 # Load libraries and limit cores
 ###############################################################################
 import os
-os.environ["OMP_NUM_THREADS"] = str(CORES)
-os.environ["OPENBLAS_NUM_THREADS"] = str(CORES)
-os.environ["MKL_NUM_THREADS"] = str(CORES)
-os.environ["VECLIB_MAXIMUM_THREADS"] = str(CORES)
-os.environ["NUMEXPR_NUM_THREADS"] = str(CORES)
 import math
 import osmnx as ox
 from os import path
 from sys import argv
+from glob import glob
 from copy import deepcopy
 from engineering_notation import EngNumber
 import cartopy.crs as ccrs
@@ -30,15 +25,15 @@ import constants as cst
 matplotlib.rc('font', family='Ubuntu Condensed')
 
 if srv.isNotebook():
-    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = (
+    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Basberike', (13.14717,-1.03444), 100, 50, 0
+        'Basberike', (13.14717,-1.03444), 100, 50
     )
 else:
-    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = argv[1:]
-    (COORDS, GENS, FRACTION, REP) = (
+    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION) = argv[1:]
+    (COORDS, GENS, FRACTION) = (
         tuple(map(float, COORDS.split(','))),
-        int(GENS), int(FRACTION), int(REP)
+        int(GENS), int(FRACTION)
     )
 (PROJ, FOOTPRINT, OVW, VERBOSE) = (
     ccrs.PlateCarree(), True, 
@@ -72,84 +67,73 @@ paths = aux.userPaths(USR)
     pd.read_csv(pthAct)
 )
 ###############################################################################
-# Land Variables
+# Loading Results
 ###############################################################################
 SITES_NUM = LAG.shape[0]
-LAG['t'] = 0*SITES_NUM
-BBOX = (
-    (min(LAG['lon']), max(LAG['lon'])),
-    (min(LAG['lat']), max(LAG['lat']))
-)
-CNTR = [i[0]+(i[1]-i[0])/2 for i in BBOX]
-###############################################################################
-# Traps' Data
-###############################################################################
 TRPS_NUM = math.floor(SITES_NUM/FRACTION)
-(initLon, initLat) = (
-    uniform(BBOX[0][0], BBOX[0][1], TRPS_NUM), 
-    uniform(BBOX[0][0], BBOX[0][1], TRPS_NUM)
+fNameBase = '{}-{:04d}_{:04d}-{}'.format(COMMUNE, SITES_NUM, TRPS_NUM, '*')
+(filesLog, filesLnd) = (
+    sorted(glob(path.join(paths['data'], CODE, fNameBase+'_LOG.csv'))),
+    sorted(glob(path.join(paths['data'], CODE, fNameBase+'_LND.pkl')))
 )
-sid = [0]*TRPS_NUM
-traps = pd.DataFrame({
-    'sid': sid,
-    'lon': initLon, 'lat': initLat, 
-    't': [0]*TRPS_NUM, 'f': [0]*TRPS_NUM
-})
-tKer = {0:{'kernel': srv.exponentialDecay, 'params': {'A': 0.5, 'b': 0.041674}}}
+logs = [pd.read_csv(f) for f in filesLog]
+lnds = [
+    srv.loadLandscape(
+        path.join(paths['data'], CODE), f.split('/')[-1].split('.')[0],
+        fExt='pkl'
+    ) 
+    for f in filesLnd
+]
+mins = [np.array(i['min']) for i in logs]
+minIx = [i[-1] for i in mins].index(min([i[-1] for i in mins]))
 ###############################################################################
-# Setting Landscape Up
+# Plotting Traps
 ###############################################################################
-lnd = srv.Landscape(
-    LAG, migrationMatrix=MAG,
-    traps=traps, trapsKernels=tKer, landLimits=BBOX,
-    trapsRadii=[0.250, 0.125, 0.100],
+XRAN = (0, 100)
+(fig, ax) = plt.subplots(1, 1, figsize=(25, 3), sharey=False)
+(fig, ax) = srv.plotTrapsKernels(
+    fig, ax, lnds[0], distRange=(XRAN[0], XRAN[1]), aspect=.125
 )
-bbox = lnd.getBoundingBox()
-trpMsk = srv.genFixedTrapsMask(lnd.trapsFixed)
-###############################################################################
-# GA Settings
-############################################################################### 
-POP_SIZE = int(10*(lnd.trapsNumber*1.5))
-(MAT, MUT, SEL) = (
-    {'cxpb':  0.300, 'indpb': 0.35}, 
-    {'mutpb': 0.375, 'indpb': 0.50},
-    {'tSize': 3}
+# ax.set_xticks([])
+# ax.set_yticks([])
+# ax.spines['top'].set_visible(False)
+# ax.spines['right'].set_visible(False)
+# ax.spines['bottom'].set_visible(False)
+# ax.spines['left'].set_visible(False)
+fig.savefig(
+    path.join(paths['data'], CODE, fNameBase[:-2]+'-KER.png'), 
+    facecolor=None, bbox_inches='tight', transparent=True,
+    pad_inches=0, dpi=350
 )
-lndGA = deepcopy(lnd)
-# Reducing the bbox for init sampling -----------------------------------------
-redFract = .25
-reduction = [(i[1]-i[0])/2*redFract for i in bbox]
-bboxRed = [(i[0]+r, i[1]-r) for (i, r) in zip(bbox,reduction)]
+plt.close('all')
 ###############################################################################
-# Registering GA functions
-############################################################################### 
-outer = np.mean
-(lnd, logbook) = srv.optimizeDiscreteTrapsGA(
-    lndGA, pop_size=POP_SIZE, generations=GENS, verbose=VERBOSE,
-    mating_params=MAT, mutation_params=MUT, selection_params=SEL,
-    fitFuns={'inner': np.sum, 'outer': outer}
-)
+# Plot GA Evolution
 ###############################################################################
-# Exporting Results
-############################################################################### 
-fNameBase = '{}-{:04d}_{:04d}-{:02d}'.format(COMMUNE, SITES_NUM, TRPS_NUM, REP)
-srv.exportLog(
-    logbook, 
-    path.join(paths['data'], CODE), fNameBase+'_LOG'
+(XRAN, YRAN) = ((0, 1000), (0, 20))
+(fig, ax) = plt.subplots(figsize=(25, 3))
+for (ix, trc) in enumerate(mins):
+    ax.plot(trc.T, color='#390099'+'77', lw=1.25)
+ax.set_xlim(0, XRAN[1])
+ax.set_ylim(0, YRAN[1])
+ax.hlines(np.arange(YRAN[0], YRAN[1]+25, 1000), XRAN[0], XRAN[1], color='#00000055', lw=1, zorder=-10)
+ax.vlines(np.arange(XRAN[0], XRAN[1]+20, 100),  YRAN[0], YRAN[1], color='#00000055', lw=1, zorder=-10)
+# ax.set_xticks([])
+# ax.set_yticks([])
+# ax.spines['top'].set_visible(False)
+# ax.spines['right'].set_visible(False)
+# ax.spines['bottom'].set_visible(False)
+# ax.spines['left'].set_visible(False)
+fig.savefig(
+    path.join(paths['data'], CODE, fNameBase[:-2]+'-GAV.png'), 
+    facecolor=None, bbox_inches='tight', transparent=True,
+    pad_inches=0, dpi=350
 )
-srv.dumpLandscape(
-    lnd, 
-    path.join(paths['data'], CODE), fNameBase+'_LND',
-    fExt='pkl'
-)
+plt.close('all')
 ###############################################################################
-# Plot Results
+# Plot Optimal
 ###############################################################################
 (STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
-lnd = srv.loadLandscape(
-    path.join(paths['data'], CODE), fNameBase+'_LND',
-    fExt='pkl'
-)
+lnd = lnds[minIx]
 lnd.updateTrapsRadii([1])
 # Landscape -------------------------------------------------------------------
 (fig, ax) = (
@@ -186,7 +170,7 @@ lnd.plotTraps(
 # srv.plotClean(fig, ax, bbox=lnd.landLimits)
 ax.set_facecolor(STYLE_BG['color'])
 fig.savefig(
-    path.join(paths['data'], CODE, fNameBase+'_SRV'),
+    path.join(paths['data'], CODE, fNameBase+'_OPT'),
     transparent=False, facecolor=STYLE_BG['color'],
     bbox_inches='tight', pad_inches=0, dpi=400
 )
