@@ -180,7 +180,7 @@ G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
 )
 lnd.plotTraps(
     fig, ax, 
-    size=500, zorders=(30, 25), transparencyHex='33', 
+    size=500, zorders=(30, 25), transparencyHex='99', 
     proj=ccrs.PlateCarree()
 )
 # lnd.plotSites(fig, ax, size=75)

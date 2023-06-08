@@ -109,7 +109,7 @@ plt.close('all')
 ###############################################################################
 # Plot GA Evolution
 ###############################################################################
-(XRAN, YRAN) = ((0, 1000), (0, 20))
+(XRAN, YRAN) = ((0, 1000), (0, aux.roundBase(max([m[0] for m in mins])*1.5)))
 (fig, ax) = plt.subplots(figsize=(25, 3))
 for (ix, trc) in enumerate(mins):
     ax.plot(trc.T, color='#390099'+'77', lw=1.25)

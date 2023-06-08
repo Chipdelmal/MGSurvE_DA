@@ -8,6 +8,9 @@ import matplotlib.colors as mcolors
 from matplotlib.colors import LinearSegmentedColormap
 
 
+def roundBase(x, base=5):
+    return base * round(x/base)
+
 def userPaths(user):
     if user=='sami':
         (DTA_ROOT, SIM_ROOT) = (
