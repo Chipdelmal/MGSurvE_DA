@@ -24,7 +24,7 @@ matplotlib.rc('font', family='Ubuntu Condensed')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Fanka', (13.1490, -1.0171)
+        'Koudougou', (12.2560,-2.3588)
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = argv[1:]
@@ -207,11 +207,3 @@ fig.savefig(
     transparent=False
 )
 plt.close('all')
-
-
-# import matplotlib.font_manager
-# from IPython.core.display import HTML
-# def make_html(fontname):
-#     return "<p>{font}: <span style='font-family:{font}; font-size: 24px;'>{font}</p>".format(font=fontname)
-# code = "\n".join([make_html(font) for font in sorted(set([f.name for f in matplotlib.font_manager.fontManager.ttflist]))])
-# HTML("<div style='column-count: 2;'>{}</div>".format(code))

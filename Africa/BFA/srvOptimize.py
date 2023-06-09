@@ -32,7 +32,7 @@ matplotlib.rc('font', family='Ubuntu Condensed')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Basberike', (13.14717,-1.03444), 100, 50, 0
+        'Basberike', (13.14717,-1.03444), 10, 50, 0
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = argv[1:]
@@ -183,12 +183,14 @@ lnd.plotTraps(
     size=500, zorders=(30, 25), transparencyHex='99', 
     proj=ccrs.PlateCarree()
 )
-# lnd.plotSites(fig, ax, size=75)
-# lnd.plotMigrationNetwork(
-#     fig, ax, 
-#     lineColor='#ffffff', lineWidth=1, 
-#     alphaMin=.125, alphaAmplitude=10000, zorder=20
-# )
+ax.text(
+    0.99, 0.01, 
+    'Min: {:.02f}'.format(min(logbook['min'])), 
+    transform=ax.transAxes, 
+    horizontalalignment='right', verticalalignment='bottom', 
+    color=STYLE_TX['color'], fontsize=STYLE_TX['size'],
+    alpha=0.75
+)
 srv.plotClean(fig, ax, bbox=BBOX)
 ax.set_facecolor(STYLE_BG['color'])
 fig.savefig(

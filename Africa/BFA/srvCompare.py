@@ -85,7 +85,8 @@ lnds = [
     for f in filesLnd
 ]
 mins = [np.array(i['min']) for i in logs]
-minIx = [i[-1] for i in mins].index(min([i[-1] for i in mins]))
+minVal = min([i[-1] for i in mins])
+minIx = [i[-1] for i in mins].index(minVal)
 ###############################################################################
 # Plotting Traps
 ###############################################################################
@@ -175,15 +176,17 @@ G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
 )
 lnd.plotTraps(
     fig, ax, 
-    size=500, zorders=(30, 25), transparencyHex='33', 
+    size=500, zorders=(30, 25), transparencyHex='99', 
     proj=ccrs.PlateCarree()
 )
-# lnd.plotSites(fig, ax, size=75)
-# lnd.plotMigrationNetwork(
-#     fig, ax, 
-#     lineColor='#ffffff', lineWidth=1, 
-#     alphaMin=.125, alphaAmplitude=10000, zorder=20
-# )
+ax.text(
+    0.99, 0.01, 
+    'Min: {:.02f}'.format(minVal), 
+    transform=ax.transAxes, 
+    horizontalalignment='right', verticalalignment='bottom', 
+    color=STYLE_TX['color'], fontsize=STYLE_TX['size'],
+    alpha=0.75
+)
 srv.plotClean(fig, ax, bbox=lnd.landLimits)
 ax.set_facecolor(STYLE_BG['color'])
 fig.savefig(
