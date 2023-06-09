@@ -71,8 +71,6 @@ def reArrangeClusterMatrix(matrix, clusters, distances=None):
     return reArrangeMatrix(matrix, clusterSorts)
 
 
-
-
 def aggregateLandscape(migrationMatrix, clusters, type=0):
     '''
     Takes the migration matrix, and the clusters list and performs the Markov

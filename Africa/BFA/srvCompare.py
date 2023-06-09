@@ -27,7 +27,7 @@ matplotlib.rc('font', family='Ubuntu Condensed')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Basberike', (13.14717,-1.03444), 100, 50
+        'Fanka', (13.14717,-1.03444), 100, 50
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION) = argv[1:]
@@ -118,11 +118,11 @@ for (ix, trc) in enumerate(mins):
     cName = filesLog[ix].split('_')[-2].split('-')[0]
     if (cName != fix):
         (cix, fix) = (cix+1, cName)
-    ax.plot(trc.T, color=COLS[cix]+'77', lw=1.25)
+    ax.plot(trc.T, color=COLS[cix]+'55', lw=0.75)
 ax.set_xlim(0, XRAN[1])
 ax.set_ylim(0, YRAN[1])
 ax.hlines(
-    np.arange(YRAN[0], YRAN[1]+25, 1000), XRAN[0], XRAN[1], 
+    np.arange(YRAN[0], YRAN[1]+25, YRAN[1]/10), XRAN[0], XRAN[1], 
     color='#00000055', lw=1, zorder=-10
 )
 ax.vlines(

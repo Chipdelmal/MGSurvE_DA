@@ -26,7 +26,7 @@ cities[2]='Fanka;13.1490,-1.0171;2500;0.0175;3'
 ###############################################################################
 # Loop through cities
 ###############################################################################
-for FRACTION in 70 60 50
+for FRACTION in 100 90 80 70 60 50 40 30 20 10
 do
     for city in "${cities[@]}"
     do
@@ -35,16 +35,16 @@ do
         name="${arr[0]}"
         lonlat="${arr[1]}"
         echo -e "${RD}* Optimizing $name...${NC}"
-        for REP in {0..3}
+        for REP in {0..5}
         do
             # Launch scripts --------------------------------------------------
             echo -e "${LG}\t* Processing ($FRACTION:$REP)...${NC}"
             python srvOptimize.py "$USR" "Burkina Faso" "BFA" "$name" "$lonlat"\
                 "$GENS" "$FRACTION" "$REP"
         done
-    done
     # Launch scripts ----------------------------------------------------------
     echo -e "${LG}\t* Summarizing...${NC}"
     python srvCompare.py "$USR" "Burkina Faso" "BFA" "$name" "$lonlat"\
         "$GENS" "$FRACTION"
+    done
 done
