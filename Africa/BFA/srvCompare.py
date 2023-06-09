@@ -71,7 +71,7 @@ paths = aux.userPaths(USR)
 ###############################################################################
 SITES_NUM = LAG.shape[0]
 TRPS_NUM = math.floor(SITES_NUM/FRACTION)
-fNameBase = '{}-{:04d}_{:04d}-{}'.format(COMMUNE, SITES_NUM, TRPS_NUM, '*')
+fNameBase = '{}-{:04d}_{}-{}'.format(COMMUNE, SITES_NUM, '*', '*')
 (filesLog, filesLnd) = (
     sorted(glob(path.join(paths['data'], CODE, fNameBase+'_LOG.csv'))),
     sorted(glob(path.join(paths['data'], CODE, fNameBase+'_LND.pkl')))
@@ -101,7 +101,7 @@ XRAN = (0, 100)
 # ax.spines['bottom'].set_visible(False)
 # ax.spines['left'].set_visible(False)
 fig.savefig(
-    path.join(paths['data'], CODE, fNameBase[:-2]+'-KER.png'), 
+    path.join(paths['data'], CODE, fNameBase[:-4]+'-KER.png'), 
     facecolor=None, bbox_inches='tight', transparent=True,
     pad_inches=0, dpi=350
 )
@@ -110,13 +110,24 @@ plt.close('all')
 # Plot GA Evolution
 ###############################################################################
 (XRAN, YRAN) = ((0, 1000), (0, aux.roundBase(max([m[0] for m in mins])*1.5)))
+COLS = ('#D01D79', '#1D07AC', '#6BFF00', '#A714D4', '#AEF4F0')
+(cix, fix) = (0, filesLog[0].split('_')[-2].split('-')[0])
 (fig, ax) = plt.subplots(figsize=(25, 3))
 for (ix, trc) in enumerate(mins):
-    ax.plot(trc.T, color='#390099'+'77', lw=1.25)
+    cName = filesLog[ix].split('_')[-2].split('-')[0]
+    if (cName != fix):
+        (cix, fix) = (cix+1, cName)
+    ax.plot(trc.T, color=COLS[cix]+'77', lw=1.25)
 ax.set_xlim(0, XRAN[1])
 ax.set_ylim(0, YRAN[1])
-ax.hlines(np.arange(YRAN[0], YRAN[1]+25, 1000), XRAN[0], XRAN[1], color='#00000055', lw=1, zorder=-10)
-ax.vlines(np.arange(XRAN[0], XRAN[1]+20, 100),  YRAN[0], YRAN[1], color='#00000055', lw=1, zorder=-10)
+ax.hlines(
+    np.arange(YRAN[0], YRAN[1]+25, 1000), XRAN[0], XRAN[1], 
+    color='#00000055', lw=1, zorder=-10
+)
+ax.vlines(
+    np.arange(XRAN[0], XRAN[1]+20, 100),  YRAN[0], YRAN[1], 
+    color='#00000055', lw=1, zorder=-10
+)
 # ax.set_xticks([])
 # ax.set_yticks([])
 # ax.spines['top'].set_visible(False)
@@ -124,7 +135,7 @@ ax.vlines(np.arange(XRAN[0], XRAN[1]+20, 100),  YRAN[0], YRAN[1], color='#000000
 # ax.spines['bottom'].set_visible(False)
 # ax.spines['left'].set_visible(False)
 fig.savefig(
-    path.join(paths['data'], CODE, fNameBase[:-2]+'-GAV.png'), 
+    path.join(paths['data'], CODE, fNameBase[:-4]+'-GAV.png'), 
     facecolor=None, bbox_inches='tight', transparent=True,
     pad_inches=0, dpi=350
 )
@@ -176,7 +187,7 @@ lnd.plotTraps(
 srv.plotClean(fig, ax, bbox=lnd.landLimits)
 ax.set_facecolor(STYLE_BG['color'])
 fig.savefig(
-    path.join(paths['data'], CODE, fNameBase[:-2]+'_OPT'),
+    path.join(paths['data'], CODE, fNameBase[:-4]+'_OPT'),
     transparent=False, facecolor=STYLE_BG['color'],
     bbox_inches='tight', pad_inches=PAD, dpi=DPI
 )

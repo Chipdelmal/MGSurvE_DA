@@ -27,24 +27,25 @@ cities[4]='Nouna;12.7326,-3.8603;2000;0.018;3'
 # Loop through cities
 ###############################################################################
 # for FRACTION in 50 25 20 15 10 5
-for FRACTION in 50 25
+for FRACTION in 50 40 30
 do
     for city in "${cities[@]}"
     do
+        # Split elements of array ---------------------------------------------
+        IFS=";" read -r -a arr <<< "${city}"
+        name="${arr[0]}"
+        lonlat="${arr[1]}"
+        echo -e "${RD}* Processing $name...${NC}"
         for REP in {0..1}
         do
-            # Split elements of array -----------------------------------------
-            IFS=";" read -r -a arr <<< "${city}"
-            name="${arr[0]}"
-            lonlat="${arr[1]}"
-            echo -e "${RD}* Processing $name ($FRACTION:$REP)...${NC}"
             # Launch scripts --------------------------------------------------
+            echo -e "${LG}\t* Optimizing ($FRACTION:$REP)...${NC}"
             python srvOptimize.py "$USR" "Burkina Faso" "BFA" "$name" "$lonlat"\
                 "$GENS" "$FRACTION" "$REP"
         done
-        echo -e "${RD}* Compiling $name ($FRACTION)...${NC}"
-        # Launch scripts --------------------------------------------------
-        python srvCompare.py "$USR" "Burkina Faso" "BFA" "$name" "$lonlat"\
-            "$GENS" "$FRACTION"
     done
+    # Launch scripts ----------------------------------------------------------
+    echo -e "${LG}\t* Summarizing...${NC}"
+    python srvCompare.py "$USR" "Burkina Faso" "BFA" "$name" "$lonlat"\
+        "$GENS" "$FRACTION"
 done

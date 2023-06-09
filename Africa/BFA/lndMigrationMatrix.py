@@ -33,7 +33,9 @@ else:
     ccrs.PlateCarree(), True, 
     {'dist': True, 'kernel': True}
 )
-MEAN_DISPERSAL = 123.182
+# MEAN_DISPERSAL = 123.182
+(LIFE_DISP, MORTALITY) = (171.1, 0.096)
+MEAN_DISPERSAL = 2*LIFE_DISP*math.sqrt(MORTALITY/math.pi)
 ###############################################################################
 # Set Paths
 ###############################################################################

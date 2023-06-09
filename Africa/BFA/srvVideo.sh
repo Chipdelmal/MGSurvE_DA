@@ -27,7 +27,7 @@ cities[4]='Nouna;12.7326,-3.8603;2000;0.018;3'
 # Loop through cities
 ###############################################################################
 # for FRACTION in 50 25 20 15 10 5
-for FRACTION in 50
+for FRACTION in 50 40 30
 do
     for city in "${cities[@]}"
     do
