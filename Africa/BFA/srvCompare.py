@@ -110,8 +110,18 @@ plt.close('all')
 ###############################################################################
 # Plot GA Evolution
 ###############################################################################
-(XRAN, YRAN) = ((0, 1000), (0, aux.roundBase(max([m[0] for m in mins])*1.5)))
-COLS = ('#D01D79', '#1D07AC', '#6BFF00', '#A714D4', '#AEF4F0')
+(XRAN, YRAN) = (
+    (0, 1000), 
+    (0, aux.roundBase(max([m[0] for m in mins])*1, fun=math.ceil))
+)
+COLS = (
+    '#D01D79', '#1D07AC', '#6BFF00', '#A714D4', '#AEF4F0',
+    '#9d4edd', '#c1121f', '#4cc9f0', '#fee440', '#ff4d6d',
+    '#00f5d4', '#ffbc42', '#778da9', '#a4c3b2', '#e0aaff',
+    '#D01D79', '#1D07AC', '#6BFF00', '#A714D4', '#AEF4F0',
+    '#9d4edd', '#c1121f', '#4cc9f0', '#fee440', '#ff4d6d',
+    '#00f5d4', '#ffbc42', '#778da9', '#a4c3b2', '#e0aaff',
+)
 (cix, fix) = (0, filesLog[0].split('_')[-2].split('-')[0])
 (fig, ax) = plt.subplots(figsize=(25, 3))
 for (ix, trc) in enumerate(mins):
@@ -122,12 +132,13 @@ for (ix, trc) in enumerate(mins):
 ax.set_xlim(0, XRAN[1])
 ax.set_ylim(0, YRAN[1])
 ax.hlines(
-    np.arange(YRAN[0], YRAN[1]+25, YRAN[1]/10), XRAN[0], XRAN[1], 
-    color='#00000055', lw=1, zorder=-10
+    ax.get_yticks(), # np.arange(YRAN[0], YRAN[1]+25, aux.roundBase(YRAN[1]/5, 10)), 
+    XRAN[0], XRAN[1], 
+    color='#00000055', lw=.2, zorder=-10
 )
 ax.vlines(
     np.arange(XRAN[0], XRAN[1]+20, 100),  YRAN[0], YRAN[1], 
-    color='#00000055', lw=1, zorder=-10
+    color='#00000055', lw=.2, zorder=-10
 )
 # ax.set_xticks([])
 # ax.set_yticks([])

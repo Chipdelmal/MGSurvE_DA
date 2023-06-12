@@ -8,8 +8,8 @@ import matplotlib.colors as mcolors
 from matplotlib.colors import LinearSegmentedColormap
 
 
-def roundBase(x, base=5):
-    return base * round(x/base)
+def roundBase(x, base=5, fun=round):
+    return base * fun(x/base)
 
 def userPaths(user):
     if user=='sami':
