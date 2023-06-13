@@ -24,7 +24,7 @@ matplotlib.rc('font', family='Ubuntu Condensed')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Koudougou', (12.2560,-2.3588)
+        'Reo', (12.3201, -2.4753)
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = argv[1:]

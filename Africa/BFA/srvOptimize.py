@@ -32,7 +32,7 @@ matplotlib.rc('font', family='Ubuntu Condensed')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Basberike', (13.14717,-1.03444), 10, 50, 0
+        'Reo', (12.3201, -2.4753), 1000, 100, 0
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = argv[1:]
@@ -43,7 +43,7 @@ else:
 (PROJ, FOOTPRINT, OVW, VERBOSE) = (
     ccrs.PlateCarree(), True, 
     {'dist': False, 'kernel': False},
-    False
+    True
 )
 ###############################################################################
 # Set Paths

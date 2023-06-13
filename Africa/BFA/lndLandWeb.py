@@ -24,7 +24,7 @@ if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST, EPS, MIN) = (
         'zelda',
         'Burkina Faso', 'BFA', 
-        'Koudougou', (12.2560,-2.3588), 5500, 0.0325, 7
+        'Reo', (12.3201, -2.4753), 1000, 0.02, 1
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST, EPS, MIN) = argv[1:]
