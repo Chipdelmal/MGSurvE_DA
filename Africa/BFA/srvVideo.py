@@ -29,7 +29,7 @@ matplotlib.rc('font', family='Ubuntu Condensed')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Niangoloko', (10.2826803,-4.9240132), 4500, 50, 0
+        'Basberike', (13.14717,-1.03444), 750, 70, 5
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = argv[1:]
@@ -199,4 +199,9 @@ fmpegMid = "-vf pad=ceil(iw/2)*2:ceil(ih/2)*2 -pix_fmt yuv420p {}/{}.mp4 -y".for
 fmpegFll = fmpegBse+fmpegMid
 process = subprocess.Popen(fmpegFll.split(), stdout=subprocess.PIPE)
 (output, error) = process.communicate()
-
+###############################################################################
+# Delete Folder
+###############################################################################
+rmFolder = "rm -r {}".format(OUT_VID)
+process = subprocess.Popen(rmFolder.split(), stdout=subprocess.PIPE)
+(output, error) = process.communicate()
