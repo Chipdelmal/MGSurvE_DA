@@ -205,3 +205,9 @@ process = subprocess.Popen(fmpegFll.split(), stdout=subprocess.PIPE)
 rmFolder = "rm -r {}".format(OUT_VID)
 process = subprocess.Popen(rmFolder.split(), stdout=subprocess.PIPE)
 (output, error) = process.communicate()
+###############################################################################
+# Delete Base Image
+###############################################################################
+rmFile = "rm {}".format(path.join(paths['data'], CODE, fNameBase+'_CLN')+'.png')
+process = subprocess.Popen(rmFile.split(), stdout=subprocess.PIPE)
+(output, error) = process.communicate()

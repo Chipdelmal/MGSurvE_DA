@@ -33,12 +33,13 @@ MAP_STYLE_A = (
 # Map Style B
 ###############################################################################
 STYLE_GD_B = {'color': '#8da9c4', 'alpha': 0.35, 'width': 0.5, 'step': 0.01, 'range': 1, 'style': ':'}
-STYLE_BG_B = {'color': '#f4f1de'}
-STYLE_TX_B = {'color': '#3d405b', 'size': 40}
+STYLE_BG_B = {'color': '#ffffff'}
+STYLE_TX_B = {'color': '#cae9ff', 'size': 40}
 STYLE_CN_B = {'color': '#3d405b', 'alpha': 0.20, 'size': 200}
 STYLE_BD_B = {'color': '#3d405b', 'alpha': 0.900}
-STYLE_RD_B = {'color': '#3d405b', 'alpha': 0.125, 'width': 1.5}
+STYLE_RD_B = {'color': '#3d405b', 'alpha': 0.025, 'width': 1.25}
 MAP_STYLE_B = (
     STYLE_GD_B, STYLE_BG_B, STYLE_TX_B, 
     STYLE_CN_B, STYLE_BD_B, STYLE_RD_B
 )
+(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = MAP_STYLE_B

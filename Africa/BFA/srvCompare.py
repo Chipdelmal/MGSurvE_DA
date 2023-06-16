@@ -27,7 +27,7 @@ matplotlib.rc('font', family='Ubuntu Condensed')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Fanka', (13.14717,-1.03444), 100, 50
+        'Reo', (12.3201, -2.4753), 1000, 50
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION) = argv[1:]
@@ -155,7 +155,7 @@ plt.close('all')
 ###############################################################################
 # Plot Optimal
 ###############################################################################
-(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
+(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_B
 (FIG_SIZE, PROJ, BSCA) = ((15, 15), ccrs.PlateCarree(), 0.001)
 (PAD, DPI) = (0, 300)
 lnd = lnds[minIx]
