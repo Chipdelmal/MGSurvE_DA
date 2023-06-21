@@ -155,7 +155,7 @@ plt.close('all')
 ###############################################################################
 # Plot Optimal
 ###############################################################################
-(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_B
+(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
 (FIG_SIZE, PROJ, BSCA) = ((15, 15), ccrs.PlateCarree(), 0.001)
 (PAD, DPI) = (0, 300)
 lnd = lnds[minIx]
