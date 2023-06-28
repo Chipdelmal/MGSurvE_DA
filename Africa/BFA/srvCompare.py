@@ -27,7 +27,7 @@ matplotlib.rc('font', family='Ubuntu Condensed')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Reo', (12.3201, -2.4753), 1000, 50
+        'Niangoloko', (10.2826803, -4.9240132), 2000, 50
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION) = argv[1:]
@@ -111,7 +111,7 @@ plt.close('all')
 # Plot GA Evolution
 ###############################################################################
 (XRAN, YRAN) = (
-    (0, 1000), 
+    (0, GENS), 
     (0, aux.roundBase(max([m[0] for m in mins])*1, fun=math.ceil))
 )
 COLS = (

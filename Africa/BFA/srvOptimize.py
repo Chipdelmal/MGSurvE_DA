@@ -43,7 +43,7 @@ else:
 (PROJ, FOOTPRINT, OVW, VERBOSE) = (
     ccrs.PlateCarree(), True, 
     {'dist': False, 'kernel': False},
-    False
+    True
 )
 ###############################################################################
 # Set Paths
