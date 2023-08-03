@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-CORES = 8
+CORES = 16
 ###############################################################################
 # Load libraries and limit cores
 ###############################################################################
@@ -35,6 +35,7 @@ else:
     (FXD_TRPS, AP, TRPS_NUM, RID) = (True, 'max', int(argv[1]), int(argv[2]))
 ID = 'STP'
 GENS = 5000
+VERBOSE = False
 OUT_PTH = '/RAID5/marshallShare/MGSurvE_v3/'
 # Convert variables and create output folder ----------------------------------
 RID = int(RID)
@@ -139,7 +140,7 @@ elif (AP=='sum'):
 elif (AP=='max'):
     outer = np.max
 (lnd, logbook) = srv.optimizeDiscreteTrapsGA(
-    lndGA, pop_size=POP_SIZE, generations=GENS, verbose=False,
+    lndGA, pop_size=POP_SIZE, generations=GENS, verbose=VERBOSE,
     mating_params=MAT, mutation_params=MUT, selection_params=SEL,
     fitFuns={'inner': np.sum, 'outer': outer}
 )
