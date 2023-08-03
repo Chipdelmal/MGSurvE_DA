@@ -124,7 +124,6 @@ POP_SIZE = int(10*(lnd.trapsNumber*1.5))
     {'mutpb': 0.375, 'indpb': 0.50},
     {'tSize': 3}
 )
-VERBOSE = True
 lndGA = deepcopy(lnd)
 # Reducing the bbox for init sampling -----------------------------------------
 redFract = .25

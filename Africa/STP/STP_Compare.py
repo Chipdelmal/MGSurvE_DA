@@ -185,3 +185,8 @@ for (logIx, trps) in enumerate(TRPS):
         transparent=False
     )
     plt.close('all')
+###############################################################################
+# Export Landscape for MGDrivE
+###############################################################################
+sites = pd.read_csv(path.join('./GEO', 'STP_LatLonN.csv'))
+lndDF = lnd.exportForMGDrivE()
