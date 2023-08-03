@@ -27,7 +27,7 @@ matplotlib.rc('font', family='Ubuntu Condensed')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Niangoloko', (10.2826803, -4.9240132), 2000, 50
+        'Manga', (11.6679, -1.076), 2000, 50
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION) = argv[1:]
@@ -155,7 +155,7 @@ plt.close('all')
 ###############################################################################
 # Plot Optimal
 ###############################################################################
-(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
+# (STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
 (FIG_SIZE, PROJ, BSCA) = ((15, 15), ccrs.PlateCarree(), 0.001)
 (PAD, DPI) = (0, 300)
 lnd = lnds[minIx]
@@ -164,12 +164,24 @@ BBOX = (
     (lnd.landLimits[0][0]-BSCA, lnd.landLimits[0][1]+BSCA),
     (lnd.landLimits[1][0]-BSCA, lnd.landLimits[1][1]+BSCA)
 )
+G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
+
+STYLE_GD_B = {'color': '#8da9c4', 'alpha': 0.35, 'width': 0.5, 'step': 0.01, 'range': 1, 'style': ':'}
+STYLE_BG_B = {'color': '#BACCFC'}
+STYLE_TX_B = {'color': '#3d405b', 'size': 40}
+STYLE_CN_B = {'color': '#3d405b', 'alpha': 0.20, 'size': 200}
+STYLE_BD_B = {'color': '#ffffff', 'alpha': 0.0}
+STYLE_RD_B = {'color': '#ffffff', 'alpha': 0.6, 'width': 0.75}
+MAP_STYLE_B = (
+    STYLE_GD_B, STYLE_BG_B, STYLE_TX_B, 
+    STYLE_CN_B, STYLE_BD_B, STYLE_RD_B
+)
+(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = MAP_STYLE_B
 # Landscape -------------------------------------------------------------------
 (fig, ax) = (
     plt.figure(figsize=FIG_SIZE, facecolor=STYLE_BG['color']), 
     plt.axes(projection=ccrs.PlateCarree())
 )
-G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
 (fig, ax) = ox.plot_graph(
     G, ax, node_size=0, figsize=(40, 40), show=False,
     bgcolor=STYLE_BG['color'], edge_color=STYLE_RD['color'], 
@@ -182,12 +194,18 @@ G = ox.project_graph(NTW, to_crs=ccrs.PlateCarree())
 )
 (fig, ax) = ox.plot_footprints(
     BLD, ax=ax, save=False, show=False, close=False,
-    bgcolor=STYLE_BG['color'], alpha=0.65,
-    color=list(BLD['cluster_color']), 
+    bgcolor=STYLE_BG['color'], alpha=0.95,
+    color=list(BLD['cluster_color']),
+    # edge_color='#000000', edge_linewidth=0.25
 )
+# (fig, ax) = ox.plot_footprints(
+#     BLD, ax=ax, save=False, show=False, close=False,
+#     bgcolor='#00000000', alpha=STYLE_BD['alpha'],
+#     color=STYLE_BD['color'] 
+# )
 lnd.plotTraps(
     fig, ax, 
-    size=500, zorders=(30, 25), transparencyHex='99', 
+    size=500, zorders=(30, 25), transparencyHex='CC', 
     proj=ccrs.PlateCarree()
 )
 ax.text(

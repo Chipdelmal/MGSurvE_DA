@@ -14,6 +14,38 @@ CLUSTER_PALETTE= [
     '#d7e3fc', '#ef233c', '#eac4d5', '#04e762', '#ca7df9',
     '#ffff3f', '#edc4b3', '#fe5d9f', '#639fab', '#9cbfa7'
 ]
+CLUSTER_PALETTE_MAPPED = {
+    '#f72585', 
+    '#b5179e', 
+    '#7209b7', 
+    '#560bad', 
+    '#3a0ca3',
+    '#3f37c9', 
+    '#4361ee', 
+    '#4895ef', 
+    '#4cc9f0', 
+    '#80ed99',
+    '#b8f2e6', 
+    '#e9ff70', 
+    '#fe6d73', 
+    '#ffc6ff', 
+    '#ffd670',
+    '#a1b5d8', 
+    '#9e0059', 
+    '#f88dad', 
+    '#dfdfdf', 
+    '#ffeedd',
+    '#d7e3fc', 
+    '#ef233c', 
+    '#eac4d5', 
+    '#04e762', 
+    '#ca7df9',
+    '#ffff3f', 
+    '#edc4b3', 
+    '#fe5d9f', 
+    '#639fab', 
+    '#9cbfa7'   
+}
 
 ###############################################################################
 # Map Style A
@@ -31,6 +63,21 @@ MAP_STYLE_A = (
 
 ###############################################################################
 # Map Style B
+###############################################################################
+STYLE_GD_B = {'color': '#8da9c4', 'alpha': 0.35, 'width': 0.5, 'step': 0.01, 'range': 1, 'style': ':'}
+STYLE_BG_B = {'color': '#ffffff'}
+STYLE_TX_B = {'color': '#cae9ff', 'size': 40}
+STYLE_CN_B = {'color': '#3d405b', 'alpha': 0.20, 'size': 200}
+STYLE_BD_B = {'color': '#3d405b', 'alpha': 0.900}
+STYLE_RD_B = {'color': '#3d405b', 'alpha': 0.025, 'width': 1.25}
+MAP_STYLE_B = (
+    STYLE_GD_B, STYLE_BG_B, STYLE_TX_B, 
+    STYLE_CN_B, STYLE_BD_B, STYLE_RD_B
+)
+(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = MAP_STYLE_B
+
+###############################################################################
+# Map Style C
 ###############################################################################
 STYLE_GD_B = {'color': '#8da9c4', 'alpha': 0.35, 'width': 0.5, 'step': 0.01, 'range': 1, 'style': ':'}
 STYLE_BG_B = {'color': '#ffffff'}

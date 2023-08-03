@@ -105,11 +105,9 @@ for trps in TRPS:
     plt.close('all')
 ###############################################################################
 # Inspect Landscape
-#
-# probe = [500, 501, 527, 213, 688, 243, 531, 449, 703, 585, 115, 131, 212, 555, 101, 460]
 ###############################################################################
 PRINT_IDS = {'sites': False, 'traps': False}
-(outer, itr, gen) = ('max', 1, 5000)
+(outer, itr, gen) = ('max', 1, GENS)
 trps = '25'
 for (logIx, trps) in enumerate(TRPS):
     lndFiles = sorted(glob(path.join(OUT_PTH, (FPAT+'TRP.pkl').format(trps))))
@@ -188,5 +186,5 @@ for (logIx, trps) in enumerate(TRPS):
 ###############################################################################
 # Export Landscape for MGDrivE
 ###############################################################################
-sites = pd.read_csv(path.join('./GEO', 'STP_LatLonN.csv'))
+pops = pd.read_csv(path.join('./GEO', 'STP_LatLonN.csv'))['pop']
 lndDF = lnd.exportForMGDrivE()
