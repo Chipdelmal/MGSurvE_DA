@@ -27,7 +27,7 @@ matplotlib.rc('font', family='Ubuntu Condensed')
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION) = (
         'zelda', 'Burkina Faso', 'BFA', 
-        'Manga', (11.6679, -1.076), 2000, 50
+        'Banfora', (10.6376, -4.7526), 4000, 50
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION) = argv[1:]
@@ -170,7 +170,7 @@ STYLE_GD_B = {'color': '#8da9c4', 'alpha': 0.35, 'width': 0.5, 'step': 0.01, 'ra
 STYLE_BG_B = {'color': '#BACCFC'}
 STYLE_TX_B = {'color': '#3d405b', 'size': 40}
 STYLE_CN_B = {'color': '#3d405b', 'alpha': 0.20, 'size': 200}
-STYLE_BD_B = {'color': '#ffffff', 'alpha': 0.0}
+STYLE_BD_B = {'color': '#ffffff', 'alpha': 0.5}
 STYLE_RD_B = {'color': '#ffffff', 'alpha': 0.6, 'width': 0.75}
 MAP_STYLE_B = (
     STYLE_GD_B, STYLE_BG_B, STYLE_TX_B, 
@@ -198,11 +198,11 @@ MAP_STYLE_B = (
     color=list(BLD['cluster_color']),
     # edge_color='#000000', edge_linewidth=0.25
 )
-# (fig, ax) = ox.plot_footprints(
-#     BLD, ax=ax, save=False, show=False, close=False,
-#     bgcolor='#00000000', alpha=STYLE_BD['alpha'],
-#     color=STYLE_BD['color'] 
-# )
+(fig, ax) = ox.plot_footprints(
+    BLD, ax=ax, save=False, show=False, close=False,
+    bgcolor='#00000000', alpha=STYLE_BD['alpha'],
+    color=STYLE_BD['color'] 
+)
 lnd.plotTraps(
     fig, ax, 
     size=500, zorders=(30, 25), transparencyHex='CC', 

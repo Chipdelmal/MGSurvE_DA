@@ -29,7 +29,7 @@ import cartopy.crs as ccrs
 ###############################################################################
 if srv.isNotebook():
     # User input (interactive session)
-    (FXD_TRPS, AP, TRPS_NUM, RID) = (True, 'max', 25, '00')
+    (FXD_TRPS, AP, TRPS_NUM, RID) = (True, 'max', 25, '01')
 else:
     # Bash call input
     (FXD_TRPS, AP, TRPS_NUM, RID) = (True, 'max', int(argv[1]), int(argv[2]))
@@ -165,8 +165,8 @@ lnd.plotSites(fig, ax, size=250)
 lnd.updateTrapsRadii([0.250, 0.125, 0.100])
 lnd.plotTraps(
     fig, ax, 
-    zorders=(30, 25), transparencyHex='55', 
-    latlon=True, proj=ccrs.PlateCarree()
+    zorders=(30, 25), transparencyHex='CC', 
+    proj=ccrs.PlateCarree()
 )
 srv.plotClean(fig, ax, bbox=lnd.landLimits)
 # srv.plotFitness(fig, ax, min(dta['min']), fmt='{:.2f}')
@@ -186,7 +186,10 @@ fig.savefig(
 )
 plt.close('all')
 # GA --------------------------------------------------------------------------
-log = pd.DataFrame(logbook)
+# log = pd.DataFrame(logbook)
+log = pd.read_csv(
+    path.join(OUT_PTH, '{}D-{}_{:02d}-{:02d}_LOG.csv'.format(ID, AP, TRPS_NUM, RID))
+)
 log.rename(columns={'median': 'avg'}, inplace=True)
 (fig, ax) = plt.subplots(1, 1, figsize=(15, 5), sharey=False)
 srv.plotGAEvolution(
@@ -201,3 +204,22 @@ fig.savefig(
     facecolor='w', bbox_inches='tight', pad_inches=0.1, dpi=300
 )
 plt.close('all')
+###############################################################################
+# Export Landscape for MGDrivE
+###############################################################################
+lndDF = lnd.exportForMGDrivE()
+# Rename cols, merge and sort -------------------------------------------------
+posDF = lndDF['pos']
+posDF.rename(columns={'x':'lon', 'y':'lat'}, inplace=True)
+posDF['sorting'] = range(posDF.shape[0])
+coordsDF = pd.merge(sites, posDF, on=['lon', 'lat']).sort_values('sorting')
+# Export to disk --------------------------------------------------------------
+migration = lndDF['mig']
+np.savetxt(
+    path.join(OUT_PTH, '{}D-{}_{:02d}-{:02d}_MIG.csv'.format(ID, AP, TRPS_NUM, RID)),
+    migration,
+    delimiter=','
+)
+coordsDF.to_csv(
+    path.join(OUT_PTH, '{}D-{}_{:02d}-{:02d}_CRD.csv'.format(ID, AP, TRPS_NUM, RID))
+)
