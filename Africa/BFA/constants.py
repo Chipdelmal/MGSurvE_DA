@@ -81,7 +81,7 @@ STYLE_GD_C = {'color': '#8da9c4', 'alpha': 0.35, 'width': 0.5, 'step': 0.01, 'ra
 STYLE_BG_C = {'color': '#FFFFFF'}
 STYLE_TX_C = {'color': '#3d405b', 'size': 40}
 STYLE_CN_C = {'color': '#3d405b', 'alpha': 0.20, 'size': 200}
-STYLE_BD_C = {'color': '#735BFF', 'alpha': 0.25}
+STYLE_BD_C = {'color': '#8093f1', 'alpha': 0.30}
 STYLE_RD_C = {'color': '#B8B8B8', 'alpha': 0.75, 'width': 0.25}
 MAP_STYLE_C = (
     STYLE_GD_C, STYLE_BG_C, STYLE_TX_C, STYLE_CN_C, STYLE_BD_C, STYLE_RD_C
