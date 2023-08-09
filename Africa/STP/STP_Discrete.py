@@ -35,7 +35,7 @@ else:
     (FXD_TRPS, AP, TRPS_NUM, RID) = (True, 'max', int(argv[1]), int(argv[2]))
 ID = 'STP'
 GENS = 5000
-VERBOSE = False
+VERBOSE = True
 OUT_PTH = '/RAID5/marshallShare/MGSurvE_v3/'
 # Convert variables and create output folder ----------------------------------
 RID = int(RID)
@@ -85,7 +85,7 @@ traps = pd.DataFrame({
     'lon': initLon, 'lat': initLat, 
     't': initTyp, 'f': initFxd
 })
-tKer = {0: {'kernel': srv.exponentialDecay, 'params': {'A': 0.5, 'b': 0.041674}}}
+tKer = {0: {'kernel': srv.exponentialDecay, 'params': {'A': 0.05, 'b': 0.041674}}}
 ###############################################################################
 # Setting Landscape Up
 ###############################################################################
