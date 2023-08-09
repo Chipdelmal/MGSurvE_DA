@@ -59,11 +59,11 @@ for (i, site) in enumerate(sites):
             site[0], site[1], zorder=5, color='#3d348bCC',
             s=350, edgecolors='w', linewidths=1.25
         )
-sites = lnd.trapsCoords
-for (i, site) in enumerate(sites):
-    if (site[0]>6.45) and (site[1]<0.17) and (site[1]>0):
+traps = lnd.trapsCoords
+for (i, trap) in enumerate(traps):
+    if (trap[0]>6.45) and (trap[1]<0.17) and (trap[1]>0):
         ax.scatter(
-            site[0], site[1], zorder=5, color='#f72585CC',
+            trap[0], trap[1], zorder=5, color='#f72585CC',
             s=350, edgecolors='w', linewidths=1.25,
             marker='o'
         )

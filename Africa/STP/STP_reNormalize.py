@@ -7,9 +7,7 @@ import pandas as pd
 from os import path
 from sys import argv
 from glob import glob
-import cartopy.crs as ccrs
-import shapely.geometry as sgeom
-from cartopy.geodesic import Geodesic
+from sklearn.preprocessing import normalize
 import matplotlib.pyplot as plt
 import MGSurvE as srv
 import auxiliary as aux
@@ -27,7 +25,7 @@ if srv.isNotebook():
 else:
     # Bash call input
     (ID, AP) = argv[1:]
-GENS = 5000
+(ORIGINAL_AMP, NEW_AMP) = (0.5, 0.05)
 FPAT = ID+'-'+AP+'_{}*'
 ###############################################################################
 # Working Folder
@@ -40,13 +38,25 @@ srv.makeFolder(OUT_PTH)
 lndFiles = sorted(glob(path.join(OUT_PTH, (FPAT+'TRP.pkl').format(TRP))))
 lndFile = lndFiles[0]
 lnd = srv.loadLandscape(
-    OUT_PTH, 
-    lndFile.split('/')[-1].split('.')[0], 
-    fExt='pkl'
+    OUT_PTH, lndFile.split('/')[-1].split('.')[0], fExt='pkl'
 )
-
-(fig, ax) = plt.subplots(1, 1, figsize=(10, 10), sharey=False)
-srv.plotMatrix(fig, ax, lnd.trapsMigration, lnd.trapsNumber)
-
-
-plt.matshow(lnd.trapsMigration[:,-lnd.trapsNumber:-1])
+###############################################################################
+# Rescale Migration
+###############################################################################
+SCALING = (1/ORIGINAL_AMP*NEW_AMP)
+migMat = np.copy(lnd.trapsMigration)
+(sitesNum, trapsNum) = (
+    migMat.shape[0]-lnd.trapsNumber, lnd.trapsNumber
+)
+nu = np.copy(migMat[:sitesNum,-trapsNum:-1])
+migMat[:sitesNum,-trapsNum:-1] = nu*SCALING
+migMat = normalize(migMat, axis=1, norm='l2')
+###############################################################################
+# Plot Matrices
+###############################################################################
+(fig, ax) = plt.subplots(1, 2, figsize=(10, 10), sharey=True)
+srv.plotMatrix(fig, ax[0], lnd.trapsMigration, trapsNum)
+srv.plotMatrix(fig, ax[1], migMat, trapsNum)
+###############################################################################
+# Export to Disk
+###############################################################################
