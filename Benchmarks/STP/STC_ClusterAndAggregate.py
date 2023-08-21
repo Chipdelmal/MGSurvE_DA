@@ -3,16 +3,13 @@
 
 from sys import argv
 import numpy as np
-import pandas as pd
 from os import path
 import compress_pickle as pkl
 import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN
-from sklearn.preprocessing import normalize
 import MGSurvE as srv
 import MoNeT_MGDrivE as monet
 import constants as cst
-pd.options.mode.chained_assignment = None 
 
 
 ###############################################################################
