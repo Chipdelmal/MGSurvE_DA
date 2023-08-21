@@ -1,17 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-CORES = 8
-###############################################################################
-# Load libraries and limit cores
-###############################################################################
-import os
-os.environ["OMP_NUM_THREADS"] = str(CORES)
-os.environ["OPENBLAS_NUM_THREADS"] = str(CORES)
-os.environ["MKL_NUM_THREADS"] = str(CORES)
-os.environ["VECLIB_MAXIMUM_THREADS"] = str(CORES)
-os.environ["NUMEXPR_NUM_THREADS"] = str(CORES)
-# Load libraries --------------------------------------------------------------
 from sys import argv
 import numpy as np
 import pandas as pd
@@ -22,7 +11,6 @@ from sklearn.preprocessing import normalize
 import MGSurvE as srv
 import constants as cst
 pd.options.mode.chained_assignment = None 
-
 
 ###############################################################################
 # Bash and user inputs
@@ -74,4 +62,4 @@ migDst = srv.calcDistanceMatrix(
 ###############################################################################
 pkl.dump(migDst, path.join(OUT_PTH, f'{ID}-DST'), compression='bz2')
 pkl.dump(SAO_TOME_MIG, path.join(OUT_PTH, f'{ID}-MIG'), compression='bz2')
-pkl.dump(SAO_TOME_LL, path.join(OUT_PTH, f'{ID}-POS'), compression='bz2')
+pkl.dump(SAO_TOME_LL, path.join(OUT_PTH, f'{ID}-PTS'), compression='bz2')
