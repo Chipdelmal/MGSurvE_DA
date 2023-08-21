@@ -7,11 +7,10 @@ KMS_PER_RADIAN = 6371.0088
 SAO_LIMITS = ((6.41, 6.79), (-0.0475, .45))
 EXP_ID = 'STC'
 PATHS = {
-    'data': './DTA', 
-    'geo': './GEO', 
-    'optimization': './OPT'
+    'data': '/RAID5/marshallShare/STC/DTA',
+    'optimization': '/RAID5/marshallShare/STC/OPT',
+    'geo': './GEO'
 }
-
 CLUSTER_PALETTE= [
     '#f72585', '#b5179e', '#7209b7', '#560bad', '#3a0ca3',
     '#3f37c9', '#4361ee', '#4895ef', '#4cc9f0', '#80ed99',
