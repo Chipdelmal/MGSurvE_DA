@@ -19,7 +19,7 @@ if srv.isNotebook():
     pass
 else:
     pass
-(ID, OUT_PTH) = (cst.EXP_ID, cst.PATHS['data'])
+(ID, PTH_OUT) = (cst.EXP_ID, cst.PATHS['data'])
 ###############################################################################
 # Not accessible masses
 ###############################################################################
@@ -28,7 +28,7 @@ NOT_ACCESSIBLE_IX = tuple([i-IX_SPLIT for i in NOT_ACCESSIBLE])
 ###############################################################################
 # Output Folder
 ###############################################################################
-srv.makeFolder(OUT_PTH)
+srv.makeFolder(PTH_OUT)
 ###############################################################################
 # Load Pointset
 ###############################################################################
@@ -60,6 +60,6 @@ migDst = srv.calcDistanceMatrix(
 ###############################################################################
 # Dump files to disk
 ###############################################################################
-pkl.dump(migDst, path.join(OUT_PTH, f'{ID}-DST'), compression='bz2')
-pkl.dump(SAO_TOME_MIG, path.join(OUT_PTH, f'{ID}-MIG'), compression='bz2')
-pkl.dump(SAO_TOME_LL, path.join(OUT_PTH, f'{ID}-PTS'), compression='bz2')
+pkl.dump(migDst, path.join(PTH_OUT, f'{ID}-DST'), compression='bz2')
+pkl.dump(SAO_TOME_MIG, path.join(PTH_OUT, f'{ID}-MIG'), compression='bz2')
+pkl.dump(SAO_TOME_LL, path.join(PTH_OUT, f'{ID}-PTS'), compression='bz2')

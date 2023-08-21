@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import normalize
 import MGSurvE as srv
+import MoNeT_MGDrivE as monet
 import constants as cst
 pd.options.mode.chained_assignment = None 
 
@@ -46,6 +47,16 @@ clustering = DBSCAN(
 ).fit(np.radians(latLons))
 clustersNum = len(set(clustering.labels_))
 PTS['cluster'] = clustering.labels_
+###############################################################################
+# Aggregate Points
+###############################################################################
+aggMat = monet.aggregateLandscape(MIG, PTS['cluster'], type=0)
+###############################################################################
+# Export to Disk
+###############################################################################
+fID = f'{ID}-{EPS:05d}'
+pkl.dump(aggMat, path.join(PTH_OUT, fID+'-AGG'), compression='bz2')
+pkl.dump(PTS, path.join(PTH_OUT, fID+'-CLS'), compression='bz2')
 ###############################################################################
 # Plot
 ###############################################################################
