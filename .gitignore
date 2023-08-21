@@ -1,5 +1,6 @@
 # Data
 *.csv
+*.bz
 
 # Cached files
 cache
