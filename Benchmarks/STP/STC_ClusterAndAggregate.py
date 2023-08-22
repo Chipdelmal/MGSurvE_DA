@@ -65,16 +65,16 @@ pkl.dump(PTS, path.join(PTH_OUT, fID+'-CLS'), compression='bz2')
 ###############################################################################
 # Plot
 ###############################################################################
-pal = cst.CLUSTER_PALETTE
-colors = [pal[i%len(pal)] for i in PTS['cluster']]
-(fig, ax) = plt.subplots(figsize=(SZE, SZE))
-ax.scatter(PTS['lon'], PTS['lat'], color=colors)
-ax.set_aspect('equal')
-fig.savefig(
-    path.join(PTH_OUT, fID+'-AGG'), 
-    bbox_inches='tight', pad_inches=0, dpi=DPI, transparent=False
-)
-plt.close('all')
+# pal = cst.CLUSTER_PALETTE
+# colors = [pal[i%len(pal)] for i in PTS['cluster']]
+# (fig, ax) = plt.subplots(figsize=(SZE, SZE))
+# ax.scatter(PTS['lon'], PTS['lat'], color=colors)
+# ax.set_aspect('equal')
+# fig.savefig(
+#     path.join(PTH_OUT, fID+'-AGG'), 
+#     bbox_inches='tight', pad_inches=0, dpi=DPI, transparent=False
+# )
+# plt.close('all')
 ###############################################################################
 # Exit (for bash)
 ###############################################################################

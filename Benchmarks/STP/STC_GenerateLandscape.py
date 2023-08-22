@@ -74,13 +74,13 @@ colors = [pal[i%len(pal)] for i in PTS['cluster']]
 ax.scatter(
     PTS['lon'], PTS['lat'], 
     ec='#ffffff88', lw=1.5,
-    color=colors, zorder=10, alpha=0.75, s=50,
+    color=colors, zorder=10, alpha=0.75, s=75,
     transform=ccrs.PlateCarree()
 )
 # lnd.plotTraps(fig, ax)
 lnd.plotMigrationNetwork(
     fig, ax, 
-    lineWidth=100, alphaMin=.35, alphaAmplitude=50,
+    lineWidth=100, alphaMin=.4, alphaAmplitude=50,
 )
 lnd.plotLandBoundary(fig, ax)
 srv.plotClean(fig, ax, bbox=lnd.landLimits)

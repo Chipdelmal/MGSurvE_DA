@@ -10,7 +10,7 @@ NC='\033[0m'
 # Processing loop
 ###############################################################################
 python STC_PreProcessMatrices.py
-for i in `seq 200 25 1500`;
+for i in `seq 200 1 1500`;
 do
     echo -e "${LG}* Processing $i${NC}"
     python STC_ClusterAndAggregate.py "$i"
