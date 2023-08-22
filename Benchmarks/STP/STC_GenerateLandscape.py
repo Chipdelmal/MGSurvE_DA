@@ -62,22 +62,23 @@ lnd = srv.Landscape(
 )
 bbox = lnd.getBoundingBox()
 ###############################################################################
+# Export Landscape
+###############################################################################
+srv.dumpLandscape(lnd, PTH_OUT, fID+'-LND', fExt='pkl')
+###############################################################################
 # Plot
 ###############################################################################
-pal = cst.CLUSTER_PALETTE
+(pal, proj) = (cst.CLUSTER_PALETTE, ccrs.PlateCarree())
 colors = [pal[i%len(pal)] for i in PTS['cluster']]
-(fig, ax) = (
-    plt.figure(figsize=(SZE, SZE)),
-    plt.axes(projection=ccrs.PlateCarree())
-)
+(fig, ax) = (plt.figure(figsize=(SZE, SZE)), plt.axes(projection=proj))
 # lnd.plotSites(fig, ax, size=1, alpha=1, lw=0)
 ax.scatter(
     PTS['lon'], PTS['lat'], 
     ec='#ffffff88', lw=1.5,
     color=colors, zorder=10, alpha=0.75, s=75,
-    transform=ccrs.PlateCarree()
+    transform=proj
 )
-# lnd.plotTraps(fig, ax)
+# lnd.plotTraps(fig, ax, proj=proj)
 lnd.plotMigrationNetwork(
     fig, ax, 
     lineWidth=100, alphaMin=.4, alphaAmplitude=50,

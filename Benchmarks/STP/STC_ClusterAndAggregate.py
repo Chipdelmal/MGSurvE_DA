@@ -79,4 +79,5 @@ pkl.dump(PTS, path.join(PTH_OUT, fID+'-CLS'), compression='bz2')
 # Exit (for bash)
 ###############################################################################
 if not srv.isNotebook():
-    exit(clustersNum)
+    # exit(clustersNum)
+    print(clustersNum)
