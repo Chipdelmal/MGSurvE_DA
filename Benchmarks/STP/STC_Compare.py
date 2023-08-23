@@ -22,10 +22,9 @@ import constants as cst
 # Bash and user inputs
 ###############################################################################
 if srv.isNotebook():
-    (CLS_NUM, TRPS_NUM, REP_ID) = (120, 8, 0)
+    pass
 else:
-    (CLS_NUM, TRPS_NUM, REP_ID) = (argv[1], int(argv[2]), int(argv[3]))
-    CLS_NUM = int(CLS_NUM.split('-')[1])
+    pass
 (ID, PTH_IN, PTH_OUT) = (
     cst.EXP_ID,
     cst.PATHS['optimization'], cst.PATHS['optimization']
@@ -53,8 +52,9 @@ for sid in SIDS:
         [pkl.load(i) for i in lndFnames]
     )
 minsDict = {sid: np.array([(i['min']) for i in logDict[sid]]) for sid in SIDS}
+optsDict = {sid: np.array([(i['min'].iloc[-1]) for i in logDict[sid]]) for sid in SIDS}
 ###############################################################################
-# Plot
+# Plots
 ###############################################################################
 (XRAN, YRAN) = (
     (0, 500), # cst.GA['GEN']/2), 
@@ -62,13 +62,33 @@ minsDict = {sid: np.array([(i['min']) for i in logDict[sid]]) for sid in SIDS}
 )
 # CLRS = cst.CLUSTER_PALETTE
 CMAP = monet.colorPaletteFromHexList(['#3a0ca3', '#f72585'])
-(fig, ax) = plt.subplots(figsize=(20, 4))
+# Traces ----------------------------------------------------------------------
+(fig, ax) = plt.subplots(figsize=(10, 2))
 for (ix, k) in enumerate(minsDict.keys()):
     ax.plot(
         minsDict[k].T, 
         # color=CLRS[(ix)%len(CLRS)], 
         color=CMAP(np.interp(ix, (0, len(SIDS)), (0, 1))),
-        alpha=0.25, lw=1.25
+        alpha=0.25, lw=0.75
     )
 ax.set_xlim(0, XRAN[1])
 ax.set_ylim(YRAN[0], YRAN[1])
+fig.savefig(
+    path.join(PTH_OUT, f'STC-TRC.png'), 
+    bbox_inches='tight', pad_inches=0, dpi=DPI, transparent=False
+)
+# Scatter ---------------------------------------------------------------------
+(fig, ax) = plt.subplots(figsize=(10, 5))
+for (ix, k) in enumerate(minsDict.keys()):
+    ax.scatter(
+        [int(k)]*len(optsDict[k]), optsDict[k], 
+        # color=CLRS[(ix)%len(CLRS)], 
+        color=CMAP(np.interp(ix, (0, len(SIDS)), (0, 1))),
+        alpha=0.25, lw=1.25, s=75, marker='x'
+    )
+ax.set_xlim(0, max([int(i) for i in minsDict.keys()])+10)
+ax.set_ylim(0, 500)
+fig.savefig(
+    path.join(PTH_OUT, f'STC-DER.png'), 
+    bbox_inches='tight', pad_inches=0, dpi=DPI, transparent=False
+)
