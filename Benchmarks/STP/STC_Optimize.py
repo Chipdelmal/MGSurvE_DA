@@ -26,7 +26,7 @@ import constants as cst
 # Bash and user inputs
 ###############################################################################
 if srv.isNotebook():
-    (CLS_NUM, TRPS_NUM, REP_ID) = (120, 10, 0)
+    (CLS_NUM, TRPS_NUM, REP_ID) = (120, 8, 0)
 else:
     (CLS_NUM, TRPS_NUM, REP_ID) = (argv[1], int(argv[2]), int(argv[3]))
     CLS_NUM = int(CLS_NUM.split('-')[1])
@@ -62,6 +62,7 @@ lndGA = deepcopy(LND)
 ###############################################################################
 # Export
 ###############################################################################
+srv.exportLog(logbook, PTH_OUT, f'{fID}-LOG_{REP_ID:02d}')
 srv.dumpLandscape(lnd, PTH_OUT, f'{fID}-LOP_{REP_ID:02d}', fExt='pkl')
 ###############################################################################
 # Plot

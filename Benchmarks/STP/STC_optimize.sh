@@ -1,9 +1,9 @@
 #!/bin/bash
 
-TRAPS_NUM=10
-RLO=1
+TRAPS_NUM=8
+RLO=0
 RHI=4
-STEP=50
+STEP=5
 DIRECTORY="/RAID5/marshallShare/STC/DTA"
 ###############################################################################
 # Auxiliary terminal constants
