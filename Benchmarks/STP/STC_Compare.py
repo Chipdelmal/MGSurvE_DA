@@ -57,8 +57,8 @@ optsDict = {sid: np.array([(i['min'].iloc[-1]) for i in logDict[sid]]) for sid i
 # Plots
 ###############################################################################
 (XRAN, YRAN) = (
-    (0, 1000), # cst.GA['GEN']/2), 
-    (0, 1500)
+    (0, cst.GA['GEN']), 
+    (0, 2500)
 )
 # CLRS = cst.CLUSTER_PALETTE
 CMAP = monet.colorPaletteFromHexList(['#3a0ca3', '#f72585'])
@@ -69,30 +69,32 @@ for (ix, k) in enumerate(minsDict.keys()):
         minsDict[k].T, 
         # color=CLRS[(ix)%len(CLRS)], 
         color=CMAP(np.interp(ix, (0, len(SIDS)), (0, 1))),
-        alpha=0.2, lw=0.3
+        alpha=0.1, lw=0.5
     )
 ax.set_xlim(0, XRAN[1])
 ax.set_ylim(YRAN[0], YRAN[1])
 ax.set_xlabel('Generations')
-ax.set_ylabel('Time to detection')
+ax.set_ylabel('Time to trap')
 fig.savefig(
     path.join(PTH_OUT, f'STC-TRC.png'), 
     bbox_inches='tight', pad_inches=0.1, 
     dpi=DPI, transparent=False
 )
 # Scatter ---------------------------------------------------------------------
+CMAP = monet.colorPaletteFromHexList(['#3a0ca3', '#f72585'])
 (fig, ax) = plt.subplots(figsize=(10, 5))
 for (ix, k) in enumerate(minsDict.keys()):
+    # print(k, optsDict[k])
     ax.scatter(
         [int(k)]*len(optsDict[k]), optsDict[k], 
         # color=CLRS[(ix)%len(CLRS)], 
         color=CMAP(np.interp(ix, (0, len(SIDS)), (0, 1))),
-        alpha=0.2, lw=1.25, s=50, marker='x'
+        alpha=0.2, lw=1.25, s=5, marker='o'
     )
-ax.set_xlim(0, max([int(i) for i in minsDict.keys()])+10)
-ax.set_ylim(0, 500)
-ax.set_xlabel('Number of sites')
-ax.set_ylabel('Time to detection')
+ax.set_xlim(0, 240) # max([int(i) for i in minsDict.keys()])+10)
+ax.set_ylim(0, 2000)
+ax.set_xlabel('Number of clusters (aggregation)')
+ax.set_ylabel('Time to trap')
 fig.savefig(
     path.join(PTH_OUT, f'STC-DER.png'), 
     bbox_inches='tight', pad_inches=0.1, 
