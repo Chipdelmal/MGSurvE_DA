@@ -1,25 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from sys import argv
+from sys import argv, exit
 import numpy as np
-import pandas as pd
 from os import path
+import pandas as pd
 import compress_pickle as pkl
 import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN
-from sklearn.preprocessing import normalize
 import MGSurvE as srv
 import MoNeT_MGDrivE as monet
 import constants as cst
-pd.options.mode.chained_assignment = None 
 
 
 ###############################################################################
 # Bash and user inputs
 ###############################################################################
 if srv.isNotebook():
-    (EPS, MIN) = (1250, 1)
+    (EPS, MIN) = (500, 1)
 else:
     (EPS, MIN) = (int(argv[1]), 1)
 (ID, PTH_IN, PTH_OUT) = (
@@ -51,21 +49,35 @@ PTS['cluster'] = clustering.labels_
 # Aggregate Points
 ###############################################################################
 aggMat = monet.aggregateLandscape(MIG, PTS['cluster'], type=0)
+(aggCentroids, clstSrt) = ([], list(PTS['cluster'].unique()))
+for cix in clstSrt:
+    matches = PTS['cluster']==cix
+    ctr = list(np.mean(PTS[matches][['lon', 'lat']], axis=0))
+    aggCentroids.append([cix]+ctr)
+aggDF = pd.DataFrame(aggCentroids, columns=['ix', 'lon', 'lat'])
 ###############################################################################
 # Export to Disk
 ###############################################################################
 fID = f'{ID}-{clustersNum:03d}'
-pkl.dump(aggMat, path.join(PTH_OUT, fID+'-AGG'), compression='bz2')
+pkl.dump(aggMat, path.join(PTH_OUT, fID+'-MAG'), compression='bz2')
+pkl.dump(aggDF, path.join(PTH_OUT, fID+'-AGG'), compression='bz2')
 pkl.dump(PTS, path.join(PTH_OUT, fID+'-CLS'), compression='bz2')
 ###############################################################################
 # Plot
 ###############################################################################
-pal = cst.CLUSTER_PALETTE
-colors = [pal[i%len(pal)] for i in PTS['cluster']]
-(fig, ax) = plt.subplots(figsize=(SZE, SZE))
-ax.scatter(PTS['lon'], PTS['lat'], color=colors)
-ax.set_aspect('equal')
-fig.savefig(
-    path.join(PTH_OUT, fID+'-AGG'), 
-    bbox_inches='tight', pad_inches=0, dpi=DPI, transparent=False
-)
+# pal = cst.CLUSTER_PALETTE
+# colors = [pal[i%len(pal)] for i in PTS['cluster']]
+# (fig, ax) = plt.subplots(figsize=(SZE, SZE))
+# ax.scatter(PTS['lon'], PTS['lat'], color=colors)
+# ax.set_aspect('equal')
+# fig.savefig(
+#     path.join(PTH_OUT, fID+'-AGG'), 
+#     bbox_inches='tight', pad_inches=0, dpi=DPI, transparent=False
+# )
+# plt.close('all')
+###############################################################################
+# Exit (for bash)
+###############################################################################
+if not srv.isNotebook():
+    # exit(clustersNum)
+    print(clustersNum)
