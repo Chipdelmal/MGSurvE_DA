@@ -79,9 +79,10 @@ elif algID=='hdbscan':
     clustersNum = len(set(clustering.labels_))
     BLD['cluster_id'] = clustering.labels_
     Counter(clustering.labels_)
-    (SZE, DPI) = (10, 300)
-    (fig, ax) = plt.subplots(figsize=(2*SZE, 2*SZE))
-    clustering.single_linkage_tree_.plot()
+    # Linkage tree ------------------------------------------------------------
+    # (SZE, DPI) = (10, 300)
+    # (fig, ax) = plt.subplots(figsize=(2*SZE, 2*SZE))
+    # clustering.single_linkage_tree_.plot()
 else:
     BLD['cluster_id'] = range(0, BLD.shape[0])
 ###############################################################################
