@@ -25,7 +25,7 @@ if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST, EPS, MIN) = (
         'zelda',
         'Burkina Faso', 'BFA', 
-        'Banfora', (10.6376,-4.7526), 4000, 0.024, 5
+        'Fanka', (13.1490,-1.0171), 2500, 0.0175, 3
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, DIST, EPS, MIN) = argv[1:]
@@ -33,7 +33,7 @@ else:
     DIST = int(DIST)
 (PROJ, FOOTPRINT, CLUSTERS_ALG, CLUSTER_PAR, DROP_NOISE) = (
     ccrs.PlateCarree(), True, 
-    DBSCAN, {'eps': float(EPS), 'min': int(MIN)}, True
+    HDBSCAN, {'eps': float(EPS), 'min': int(MIN)}, True
 )
 ###############################################################################
 # Set Paths
@@ -79,6 +79,9 @@ elif algID=='hdbscan':
     clustersNum = len(set(clustering.labels_))
     BLD['cluster_id'] = clustering.labels_
     Counter(clustering.labels_)
+    (SZE, DPI) = (10, 300)
+    (fig, ax) = plt.subplots(figsize=(2*SZE, 2*SZE))
+    clustering.single_linkage_tree_.plot()
 else:
     BLD['cluster_id'] = range(0, BLD.shape[0])
 ###############################################################################
