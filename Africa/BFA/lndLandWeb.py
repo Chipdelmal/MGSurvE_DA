@@ -11,7 +11,8 @@ import cartopy.crs as ccrs
 import compress_pickle as pkl
 import matplotlib
 import matplotlib.pyplot as plt
-from sklearn.cluster import DBSCAN, OPTICS
+from hdbscan import HDBSCAN
+from sklearn.cluster import DBSCAN
 import numpy as np
 import MGSurvE as srv
 import auxiliary as aux
@@ -56,14 +57,24 @@ BLD.reset_index(inplace=True)
 ###############################################################################
 # Cluster Data
 ###############################################################################
-if CLUSTERS_ALG:
-    # lonLats = np.array(list(zip(BLD['centroid_lon'], BLD['centroid_lat'])))
-    # clustering = CLUSTERS_ALG(n_clusters=CLUSTERS_NUM).fit(lonLats)
-    latLons = np.array(list(zip(BLD['centroid_lat'], BLD['centroid_lon'])))
+algID = CLUSTERS_ALG.__module__.split('.')[-1].replace('_', '')
+latLons = np.array(list(zip(BLD['centroid_lat'], BLD['centroid_lon'])))
+if algID=='dbscan':
+    print("* Using DBSCAN clustering!")
     clustering = DBSCAN(
         eps=CLUSTER_PAR['eps']/cst.KMS_PER_RADIAN, 
         min_samples=CLUSTER_PAR['min'], 
         algorithm='ball_tree', metric='haversine', n_jobs=4
+    ).fit(np.radians(latLons))
+    clustersNum = len(set(clustering.labels_))
+    BLD['cluster_id'] = clustering.labels_
+    Counter(clustering.labels_)
+elif algID=='hdbscan':
+    print("* Using HDBSCAN clustering!")
+    clustering = HDBSCAN(
+        cluster_selection_epsilon=CLUSTER_PAR['eps']/cst.KMS_PER_RADIAN, 
+        min_samples=CLUSTER_PAR['min'], 
+        metric='haversine'
     ).fit(np.radians(latLons))
     clustersNum = len(set(clustering.labels_))
     BLD['cluster_id'] = clustering.labels_
