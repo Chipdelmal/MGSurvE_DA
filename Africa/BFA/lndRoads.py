@@ -31,7 +31,7 @@ from PIL import Image
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = (
         'sami', 'Burkina Faso', 'BFA', 
-        'Banfora', (10.6376,-4.7526), 4000, 93, 1
+        'Niangoloko', (10.2826803,-4.9240132), 4500, 13, 0
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = argv[1:]
@@ -72,7 +72,7 @@ paths = aux.userPaths(USR)
 )
 # Get filename and create out folder ------------------------------------------
 SITES_NUM = LAG.shape[0]
-TRPS_NUM = math.floor(SITES_NUM/FRACTION)
+TRPS_NUM = FRACTION # math.floor(SITES_NUM/FRACTION)
 fNameBase = '{}-{:04d}_{:04d}-{:02d}'.format(COMMUNE, SITES_NUM, TRPS_NUM, REP)
 (log, lnd) = (
     pd.read_csv(path.join(paths['data'], CODE, fNameBase+'_LOG.csv')),
@@ -116,7 +116,7 @@ lengths = [
 ]
 dMat = aux.routeDistances(G, trpCds[0], trpCds[1])
 rMat = aux.routeMatrix(G, nNodes)
-plt.matshow(dMat)
+# plt.matshow(dMat)
 ###############################################################################
 # Optimize
 ###############################################################################
@@ -130,7 +130,6 @@ def create_data_model():
 def get_solution(data, manager, routing, solution):
     for vehicle_id in range(data["num_vehicles"]):
         index = routing.Start(vehicle_id)
-        plan_output = f"Route for vehicle {vehicle_id}:\n"
         route = []
         while not routing.IsEnd(index):
             route.append(manager.IndexToNode(index))
@@ -159,6 +158,12 @@ SOL_ROUTES = [
     ox.shortest_path(G, nNodes[OSOL[i]], nNodes[OSOL[i+1]], weight='length')
     for i in range(TRPS_NUM)
 ]
+SOL_LENGTH = np.sum([
+    nx.shortest_path_length(
+        G=G, source=nNodes[OSOL[i]], target=nNodes[OSOL[i+1]], weight='length'
+    )
+    for i in range(TRPS_NUM)
+])
 ###############################################################################
 # Plot Landscape
 ###############################################################################
@@ -210,6 +215,14 @@ else:
         )
 srv.plotClean(fig, ax, bbox=BBOX)
 ax.set_facecolor(STYLE_BG['color'])
+ax.text(
+    0.5, 0.95,
+    f'Fitness: {fitness:.2f}\nRoute Length: {SOL_LENGTH:.0f}', 
+    transform=ax.transAxes, 
+    horizontalalignment='center', verticalalignment='top', 
+    color=STYLE_TX['color'], fontsize=15,
+    alpha=0.75
+)
 fig.savefig(
     path.join(paths['data'], CODE, fNameBase+'_RTE'), 
     transparent=False, facecolor=STYLE_BG['color'],

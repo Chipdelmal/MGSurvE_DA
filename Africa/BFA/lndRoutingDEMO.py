@@ -26,7 +26,7 @@ def create_data_model():
       [662, 1210, 754, 1358, 1244, 708, 480, 856, 514, 468, 354, 844, 730, 536, 194, 798, 0],
         # fmt: on
     ]
-    data["num_vehicles"] = 3
+    data["num_vehicles"] = 4
     data["depot"] = 10
     return data
 
