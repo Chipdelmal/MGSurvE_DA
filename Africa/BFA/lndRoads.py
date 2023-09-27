@@ -114,6 +114,7 @@ lengths = [
 ]
 
 dMat = aux.routeDistances(G, trpCds[0], trpCds[1])
+dMat = aux.routeMatrix(G, nNodes)
 plt.matshow(dMat)
 # routes = ox.shortest_path(G, TRPS_NUM*[nNodes[ix]], nNodes)
 # (tPosA, tPosB) = (trapsLocs.iloc[ix], trapsLocs.iloc[jx])
@@ -125,6 +126,7 @@ plt.matshow(dMat)
 ###############################################################################
 # Plot Landscape
 ###############################################################################
+ALL_ROUTES = True
 (FIG_SIZE, PROJ, BSCA) = ((15, 15), ccrs.PlateCarree(), 0.001)
 BBOX = (
     (lnd.landLimits[0][0]-BSCA, lnd.landLimits[0][1]+BSCA),
@@ -143,12 +145,6 @@ lnd.plotTraps(
     fig, ax, 
     zorders=(30, 25), size=750, transparencyHex='99', proj=PROJ
 )
-for route in routes:
-    (fig, ax) = ox.plot_graph_route(
-        G, route, ax=ax, save=False, show=False, close=False,
-        route_color='#b5e48c', route_linewidth=2.5, 
-        node_size=1, bgcolor='#00000000', zorder=-10
-    )
 (fig, ax) = ox.plot_footprints(
     BLD, ax=ax, save=False, show=False, close=False,
     bgcolor=STYLE_BG['color'], color=STYLE_BD['color'], 
@@ -159,11 +155,26 @@ for route in routes:
     bgcolor=STYLE_BG['color'], alpha=0.25,
     color=list(BLD['cluster_color']), 
 )
+if ALL_ROUTES:
+    for route in dMat:
+        for r in route:
+            (fig, ax) = ox.plot_graph_route(
+                G, r, ax=ax, save=False, show=False, close=False,
+                route_color='#b5e48c22', route_linewidth=4, 
+                node_size=1, bgcolor='#00000000', route_alpha=0.0225
+            )
+else:
+    for route in routes:
+        (fig, ax) = ox.plot_graph_route(
+            G, route, ax=ax, save=False, show=False, close=False,
+            route_color='#b5e48c22', route_linewidth=3, 
+            node_size=1, bgcolor='#00000000', route_alpha=0.5
+        )
 srv.plotClean(fig, ax, bbox=BBOX)
 ax.set_facecolor(STYLE_BG['color'])
-# fig.savefig(
-#     path.join(paths['data'], CODE, fNameBase+'_CLN'), 
-#     transparent=False, facecolor=STYLE_BG['color'],
-#     bbox_inches='tight', pad_inches=PAD, dpi=DPI
-# )
+fig.savefig(
+    path.join(paths['data'], CODE, fNameBase+'_RTE'), 
+    transparent=False, facecolor=STYLE_BG['color'],
+    bbox_inches='tight', pad_inches=PAD, dpi=DPI
+)
 # plt.close('all')

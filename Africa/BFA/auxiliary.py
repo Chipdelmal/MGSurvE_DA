@@ -167,6 +167,22 @@ def routeDistancesMatrix(G, nNodes):
     return dMatrix
 
 
+def routeMatrix(G, nNodes):
+    TRPS_NUM = len(nNodes)
+    dMatrix = []
+    for row in range(TRPS_NUM):
+        cnode = nNodes[row]
+        dRow = []
+        for col in range(TRPS_NUM):
+            tnode = nNodes[col]
+            route = nx.shortest_path(
+                G=G, source=cnode, target=tnode, weight='length'
+            )
+            dRow.append(route)
+        dMatrix.append(dRow)
+    return dMatrix
+
+
 def routeDistances(G, trpsX, trpsY):
     (nNodes, dNodes) = ox.nearest_nodes(G, trpsX, trpsY, return_dist=True)
     dMat = routeDistancesMatrix(G, nNodes)
