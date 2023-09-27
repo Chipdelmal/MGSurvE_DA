@@ -14,8 +14,8 @@ def roundBase(x, base=5, fun=round):
 def userPaths(user):
     if user=='sami':
         (DTA_ROOT, SIM_ROOT) = (
-            '/Users/sanchez.hmsc/Documents/WorkSims/MGSurvE_show/', 
-            '/Users/sanchez.hmsc/Documents/WorkSims/MGSurvE_show/'
+            '/Users/sanchez.hmsc/Documents/WorkSims/MGSurvE_DA/', 
+            '/Users/sanchez.hmsc/Documents/WorkSims/MGSurvE_DA/'
         )
     elif user=='zelda':
         (DTA_ROOT, SIM_ROOT) = (
