@@ -1,6 +1,6 @@
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
-
+import numpy as np
 
 def create_data_model():
     """Stores the data for the problem."""
@@ -26,8 +26,8 @@ def create_data_model():
       [662, 1210, 754, 1358, 1244, 708, 480, 856, 514, 468, 354, 844, 730, 536, 194, 798, 0],
         # fmt: on
     ]
-    data["num_vehicles"] = 2
-    data["depot"] = 0
+    data["num_vehicles"] = 3
+    data["depot"] = 10
     return data
 
 
@@ -40,7 +40,7 @@ def print_solution(data, manager, routing, solution):
         plan_output = f"Route for vehicle {vehicle_id}:\n"
         route_distance = 0
         while not routing.IsEnd(index):
-            plan_output += f" {manager.IndexToNode(index)} -> "
+            plan_output += f" {manager.IndexToNode(index)}, "
             previous_index = index
             index = solution.Value(routing.NextVar(index))
             route_distance += routing.GetArcCostForVehicle(
@@ -85,7 +85,7 @@ def main():
     routing.AddDimension(
         transit_callback_index,
         0,  # no slack
-        3000,  # vehicle maximum travel distance
+        5000,  # vehicle maximum travel distance
         True,  # start cumul to zero
         dimension_name,
     )
