@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import osmnx as ox
 import numpy as np
 from math import exp
+import networkx as nx
 from sklearn.preprocessing import normalize
 import matplotlib.colors as mcolors
 from matplotlib.colors import LinearSegmentedColormap
@@ -147,3 +149,25 @@ def aggregateLandscapeAltGill(migrationMatrix, clusters):
             ]
             aggr_matrix[row][column] = sum(all_comb)/len(row_ids)
     return aggr_matrix
+
+
+###############################################################################
+# Routing
+###############################################################################
+def routeDistancesMatrix(G, nNodes):
+    TRPS_NUM = len(nNodes)
+    dMatrix = np.zeros((TRPS_NUM, TRPS_NUM), dtype=float)
+    for row in range(TRPS_NUM):
+        cnode = nNodes[row]
+        for col in range(TRPS_NUM):
+            tnode = nNodes[col]
+            dMatrix[row, col] = nx.shortest_path_length(
+                G=G, source=cnode, target=tnode, weight='length'
+            )
+    return dMatrix
+
+
+def routeDistances(G, trpsX, trpsY):
+    (nNodes, dNodes) = ox.nearest_nodes(G, trpsX, trpsY, return_dist=True)
+    dMat = routeDistancesMatrix(G, nNodes)
+    return dMat

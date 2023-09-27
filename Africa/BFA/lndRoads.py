@@ -10,6 +10,7 @@ import subprocess
 import osmnx as ox
 from os import path
 from sys import argv
+import networkx as nx
 from copy import deepcopy
 from engineering_notation import EngNumber
 import cartopy.crs as ccrs
@@ -24,7 +25,6 @@ import auxiliary as aux
 import constants as cst
 from PIL import Image
 # matplotlib.use('agg')
-matplotlib.rc('font', family='Ubuntu Condensed')
 
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = (
@@ -106,8 +106,15 @@ fitness = log['min'].iloc[gen]
 G = ox.project_graph(NTW, to_crs=PROJ)
 (ix, jx) = (10, 5)
 cNode = ox.nearest_nodes(G, np.mean(BLD['centroid_lon']), np.mean(BLD['centroid_lat']))
-nNodes = ox.nearest_nodes(G, trapsLocs['lon'], trapsLocs['lat'])
-routes = ox.shortest_path(G, TRPS_NUM*[cNode], nNodes)
+(nNodes, dNodes) = ox.nearest_nodes(G, trapsLocs['lon'], trapsLocs['lat'], return_dist=True)
+routes = ox.shortest_path(G, TRPS_NUM*[cNode], nNodes, weight="length")
+lengths = [
+    nx.shortest_path_length(G=G, source=cNode, target=node, weight='length')
+    for node in nNodes
+]
+
+dMat = aux.routeDistances(G, trpCds[0], trpCds[1])
+plt.matshow(dMat)
 # routes = ox.shortest_path(G, TRPS_NUM*[nNodes[ix]], nNodes)
 # (tPosA, tPosB) = (trapsLocs.iloc[ix], trapsLocs.iloc[jx])
 # (cNdeA, cNdeB) = ( 
@@ -140,7 +147,7 @@ for route in routes:
     (fig, ax) = ox.plot_graph_route(
         G, route, ax=ax, save=False, show=False, close=False,
         route_color='#b5e48c', route_linewidth=2.5, 
-        node_size=0, bgcolor='#00000000', zorder=-10
+        node_size=1, bgcolor='#00000000', zorder=-10
     )
 (fig, ax) = ox.plot_footprints(
     BLD, ax=ax, save=False, show=False, close=False,
