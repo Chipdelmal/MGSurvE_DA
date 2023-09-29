@@ -29,12 +29,12 @@ from PIL import Image
 # matplotlib.use('agg')
 
 if srv.isNotebook():
-    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = (
-        'sami', 'Burkina Faso', 'BFA', 
-        'Niangoloko', (10.2826803,-4.9240132), 4500, 13, 1
+    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = (
+        'sami', 'Tanzania', 'TZA', 
+        'Kayense', (-2.4209,32.97015), 1000, 10, 0
     )
 else:
-    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, FRACTION, REP) = argv[1:]
+    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = argv[1:]
     (COORDS, GENS, FRACTION, REP) = (
         tuple(map(float, COORDS.split(','))),
         int(GENS), int(FRACTION), int(REP)
@@ -72,7 +72,6 @@ paths = aux.userPaths(USR)
 )
 # Get filename and create out folder ------------------------------------------
 SITES_NUM = LAG.shape[0]
-TRPS_NUM = (FRACTION if srv.isNotebook() else math.floor(SITES_NUM/FRACTION))
 fNameBase = '{}-{:04d}_{:04d}-{:02d}'.format(COMMUNE, SITES_NUM, TRPS_NUM, REP)
 (log, lnd) = (
     pd.read_csv(path.join(paths['data'], CODE, fNameBase+'_LOG.csv')),
@@ -123,8 +122,8 @@ rMat = aux.routeMatrix(G, nNodes)
 def create_data_model():
     data = {}
     data["distance_matrix"] = dMat.astype(int)
-    data["num_vehicles"] = 3
-    data["depot"] = 1
+    data["num_vehicles"] = 2
+    data["depot"] = 7
     return data
 
 def get_solution(data, manager, routing, solution):
@@ -213,7 +212,7 @@ lnd.plotTraps(
 )
 (fig, ax) = ox.plot_footprints(
     BLD, ax=ax, save=False, show=False, close=False,
-    bgcolor=STYLE_BG['color'], alpha=0.25,
+    bgcolor=STYLE_BG['color'], alpha=0.75,
     color=list(BLD['cluster_color']), 
 )
 for ix in range(TRPS_NUM):
