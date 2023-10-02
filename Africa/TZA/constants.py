@@ -6,6 +6,8 @@ KMS_PER_RADIAN = 6371.0088
 ###############################################################################
 # Available cluster colors
 ###############################################################################
+# RCOLORS = ('#f72585', '#b5e48c', '#4361ee', '#eeeeee', '#f8f32b', '#f80000')
+RCOLORS = ('#f72585', '#b5e48c', '#4361ee', '#9b287b', '#ff6b6b', '#f80000')
 CLUSTER_PALETTE= [
     '#f72585', '#b5179e', '#7209b7', '#560bad', '#3a0ca3',
     '#3f37c9', '#4361ee', '#4895ef', '#4cc9f0', '#80ed99',
@@ -15,36 +17,14 @@ CLUSTER_PALETTE= [
     '#ffff3f', '#edc4b3', '#fe5d9f', '#639fab', '#9cbfa7'
 ]
 CLUSTER_PALETTE_MAPPED = {
-    '#f72585', 
-    '#b5179e', 
-    '#7209b7', 
-    '#560bad', 
-    '#3a0ca3',
-    '#3f37c9', 
-    '#4361ee', 
-    '#4895ef', 
-    '#4cc9f0', 
-    '#80ed99',
-    '#b8f2e6', 
-    '#e9ff70', 
-    '#fe6d73', 
-    '#ffc6ff', 
-    '#ffd670',
-    '#a1b5d8', 
-    '#9e0059', 
-    '#f88dad', 
-    '#dfdfdf', 
-    '#ffeedd',
-    '#d7e3fc', 
-    '#ef233c', 
-    '#eac4d5', 
-    '#04e762', 
-    '#ca7df9',
-    '#ffff3f', 
-    '#edc4b3', 
-    '#fe5d9f', 
-    '#639fab', 
-    '#9cbfa7'   
+    '#f72585', '#b5179e', '#7209b7', '#560bad', 
+    '#3a0ca3', '#3f37c9', '#4361ee', '#4895ef', 
+    '#4cc9f0', '#80ed99', '#b8f2e6', '#e9ff70', 
+    '#fe6d73', '#ffc6ff', '#ffd670', '#a1b5d8', 
+    '#9e0059', '#f88dad', '#dfdfdf', '#ffeedd',
+    '#d7e3fc', '#ef233c', '#eac4d5', '#04e762', 
+    '#ca7df9', '#ffff3f', '#edc4b3', '#fe5d9f', 
+    '#639fab', '#9cbfa7'   
 }
 
 ###############################################################################
@@ -81,8 +61,8 @@ STYLE_GD_C = {'color': '#8da9c4', 'alpha': 0.35, 'width': 0.5, 'step': 0.01, 'ra
 STYLE_BG_C = {'color': '#FFFFFF'}
 STYLE_TX_C = {'color': '#3d405b', 'size': 40}
 STYLE_CN_C = {'color': '#3d405b', 'alpha': 0.20, 'size': 200}
-STYLE_BD_C = {'color': '#8093f1', 'alpha': 0.30}
-STYLE_RD_C = {'color': '#B8B8B8', 'alpha': 0.75, 'width': 0.25}
+STYLE_BD_C = {'color': '#304c89', 'alpha': 0.30}
+STYLE_RD_C = {'color': '#292f36', 'alpha': 0.5, 'width': 0.25}
 MAP_STYLE_C = (
     STYLE_GD_C, STYLE_BG_C, STYLE_TX_C, STYLE_CN_C, STYLE_BD_C, STYLE_RD_C
 )

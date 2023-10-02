@@ -31,13 +31,13 @@ from PIL import Image
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = (
         'sami', 'Tanzania', 'TZA', 
-        'Kayense', (-2.4209,32.97015), 1000, 10, 0
+        'Kisesa', (-2.5563,33.0470), 1000, 40, 0
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = argv[1:]
     (COORDS, GENS, FRACTION, REP) = (
         tuple(map(float, COORDS.split(','))),
-        int(GENS), int(FRACTION), int(REP)
+        int(GENS), int(TRPS_NUM), int(REP)
     )
 (PROJ, FOOTPRINT, OVW, VERBOSE) = (
     ccrs.PlateCarree(), True, 
@@ -80,7 +80,7 @@ fNameBase = '{}-{:04d}_{:04d}-{:02d}'.format(COMMUNE, SITES_NUM, TRPS_NUM, REP)
 ###############################################################################
 # Examine landscape
 ###############################################################################
-(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
+(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_C
 (PAD, DPI) = (0, 250)
 lnd.updateTrapsRadii([1])
 bbox = lnd.getBoundingBox()
@@ -122,8 +122,8 @@ rMat = aux.routeMatrix(G, nNodes)
 def create_data_model():
     data = {}
     data["distance_matrix"] = dMat.astype(int)
-    data["num_vehicles"] = 2
-    data["depot"] = 7
+    data["num_vehicles"] = 5
+    data["depot"] = 35
     return data
 
 def get_solution(data, manager, routing, solution):
@@ -199,7 +199,7 @@ BBOX = (
 (fig, ax) = ox.plot_graph(
     G, ax, node_size=0, figsize=(40, 40), show=False,
     bgcolor=STYLE_BG['color'], edge_color=STYLE_RD['color'], 
-    edge_alpha=STYLE_RD['alpha'], edge_linewidth=STYLE_RD['width']
+    edge_alpha=STYLE_RD['alpha']*.6, edge_linewidth=STYLE_RD['width']
 )
 lnd.plotTraps(
     fig, ax, 
@@ -208,13 +208,13 @@ lnd.plotTraps(
 (fig, ax) = ox.plot_footprints(
     BLD, ax=ax, save=False, show=False, close=False,
     bgcolor=STYLE_BG['color'], color=STYLE_BD['color'], 
-    alpha=STYLE_BD['alpha']
+    alpha=STYLE_BD['alpha']*1.5
 )
-(fig, ax) = ox.plot_footprints(
-    BLD, ax=ax, save=False, show=False, close=False,
-    bgcolor=STYLE_BG['color'], alpha=0.75,
-    color=list(BLD['cluster_color']), 
-)
+# (fig, ax) = ox.plot_footprints(
+#     BLD, ax=ax, save=False, show=False, close=False,
+#     bgcolor=STYLE_BG['color'], alpha=0.5,
+#     color=list(BLD['cluster_color']), 
+# )
 for ix in range(TRPS_NUM):
     ax.text(
         trpCds[0][ix], trpCds[1][ix], ix, 
@@ -231,21 +231,20 @@ if ALL_ROUTES:
             )
 else:
     for (ix, vehicle) in enumerate(SOL_ROUTES):
-        RCOLORS = ('#f72585', '#b5e48c', '#4361ee', '#ff1b1c')
         for route in vehicle:
             (fig, ax) = ox.plot_graph_route(
                 G, route, ax=ax, save=False, show=False, close=False,
-                route_color=RCOLORS[ix], route_linewidth=3, 
+                route_color=cst.RCOLORS[ix], route_linewidth=4, 
                 node_size=0, node_alpha=0, bgcolor='#00000000', 
-                route_alpha=0.75
+                route_alpha=0.65
             )
 srv.plotClean(fig, ax, bbox=BBOX)
 ax.set_facecolor(STYLE_BG['color'])
 ax.text(
-    0.5, 0.95,
-    f'Fitness: {fitness:.2f}\nRoute Length: {SOL_LENGTH:.0f}', 
+    0.075, 0.075,
+    f'Fitness: {fitness:.2f}\nRoutes Total: {SOL_LENGTH/3:.2f} km', 
     transform=ax.transAxes, 
-    horizontalalignment='center', verticalalignment='top', 
+    horizontalalignment='left', verticalalignment='bottom', 
     color=STYLE_TX['color'], fontsize=15,
     alpha=0.75
 )

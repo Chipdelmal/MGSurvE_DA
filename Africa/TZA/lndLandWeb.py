@@ -75,11 +75,17 @@ if algID=='dbscan':
     Counter(clustering.labels_)
 elif algID=='hdbscan':
     print("* Using HDBSCAN clustering!")
-    clustering = HDBSCAN(
-        cluster_selection_epsilon=CLUSTER_PAR['eps']/cst.KMS_PER_RADIAN, 
-        min_samples=CLUSTER_PAR['min'], 
-        metric='haversine'
-    ).fit(np.radians(latLons))
+    if np.isclose(CLUSTER_PAR['eps'], 0):
+        clustering = HDBSCAN(
+            min_samples=CLUSTER_PAR['min'], 
+            metric='haversine'
+        ).fit(np.radians(latLons))
+    else:
+        clustering = HDBSCAN(
+            cluster_selection_epsilon=CLUSTER_PAR['eps']/cst.KMS_PER_RADIAN, 
+            min_samples=CLUSTER_PAR['min'], 
+            metric='haversine'
+        ).fit(np.radians(latLons))
     clustersNum = len(set(clustering.labels_))
     BLD['cluster_id'] = clustering.labels_
     Counter(clustering.labels_)
