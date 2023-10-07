@@ -53,7 +53,7 @@ BLD = ox.geometries.geometries_from_point(
 )
 NTW = ox.graph_from_point(
     COORDS, dist=DIST, network_type='all',
-    retain_all=True, simplify=True, truncate_by_edge=True
+    retain_all=False, simplify=True, truncate_by_edge=False
 )
 BLD['centroid_lon'] = [poly.centroid.x for poly in BLD['geometry']]
 BLD['centroid_lat'] = [poly.centroid.y for poly in BLD['geometry']]
