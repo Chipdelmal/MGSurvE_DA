@@ -64,7 +64,7 @@ BLD.reset_index(inplace=True)
 algID = CLUSTERS_ALG.__module__.split('.')[-1].replace('_', '')
 latLons = np.array(list(zip(BLD['centroid_lat'], BLD['centroid_lon'])))
 if algID=='dbscan':
-    print("* Using DBSCAN clustering!")
+    # print("\t* Using DBSCAN clustering!")
     clustering = DBSCAN(
         eps=CLUSTER_PAR['eps']/cst.KMS_PER_RADIAN, 
         min_samples=CLUSTER_PAR['min'], 
@@ -74,7 +74,7 @@ if algID=='dbscan':
     BLD['cluster_id'] = clustering.labels_
     Counter(clustering.labels_)
 elif algID=='hdbscan':
-    print("* Using HDBSCAN clustering!")
+    # print("\t* Using HDBSCAN clustering!")
     if np.isclose(CLUSTER_PAR['eps'], 0):
         clustering = HDBSCAN(
             min_samples=CLUSTER_PAR['min'], 
