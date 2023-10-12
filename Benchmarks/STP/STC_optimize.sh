@@ -1,8 +1,8 @@
 #!/bin/bash
 
 TRAPS_NUM=8
-RLO=5
-RHI=8
+RLO=8
+RHI=15
 STEP=2
 DIRECTORY="/RAID5/marshallShare/STC/DTA"
 ###############################################################################
