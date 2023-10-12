@@ -206,6 +206,10 @@ lnd.plotTraps(
     fig, ax, 
     zorders=(30, 25), size=600, transparencyHex='BB', proj=PROJ
 )
+lnd.plotLandBoundary(
+    fig, ax,  
+    landTuples=(('10m', '#dfe7fd99', 30), ('10m', '#ffffffDD', 5))
+)
 (fig, ax) = ox.plot_footprints(
     BLD, ax=ax, save=False, show=False, close=False,
     bgcolor=STYLE_BG['color'], color=STYLE_BD['color'], 
