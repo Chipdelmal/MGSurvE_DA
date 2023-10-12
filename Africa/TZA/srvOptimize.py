@@ -32,7 +32,7 @@ import constants as cst
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = (
         'sami', 'Tanzania', 'TZA', 
-        'Kisesa', (-2.5563,33.0470), 1000, 40, 0
+        'Mwanza', (-2.5195,32.9046), 1000, 30, 0
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = argv[1:]

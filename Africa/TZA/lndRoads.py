@@ -31,7 +31,7 @@ from PIL import Image
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = (
         'sami', 'Tanzania', 'TZA', 
-        'Kisesa', (-2.5563,33.0470), 1000, 40, 0
+        'Mwanza', (-2.5195,32.9046), 1000, 40, 0
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = argv[1:]
@@ -80,7 +80,7 @@ fNameBase = '{}-{:04d}_{:04d}-{:02d}'.format(COMMUNE, SITES_NUM, TRPS_NUM, REP)
 ###############################################################################
 # Examine landscape
 ###############################################################################
-(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_C
+(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
 (PAD, DPI) = (0, 250)
 lnd.updateTrapsRadii([1])
 bbox = lnd.getBoundingBox()
@@ -105,6 +105,7 @@ fitness = log['min'].iloc[gen]
 #   https://github.com/gboeing/osmnx-examples/blob/main/notebooks/02-routing-speed-time.ipynb
 ###############################################################################
 G = ox.project_graph(NTW, to_crs=PROJ)
+G = ox.utils_graph.get_largest_component(G, strongly=True)
 (ix, jx) = (10, 5)
 cNode = ox.nearest_nodes(G, np.mean(BLD['centroid_lon']), np.mean(BLD['centroid_lat']))
 (nNodes, dNodes) = ox.nearest_nodes(G, trapsLocs['lon'], trapsLocs['lat'], return_dist=True)
@@ -122,8 +123,8 @@ rMat = aux.routeMatrix(G, nNodes)
 def create_data_model():
     data = {}
     data["distance_matrix"] = dMat.astype(int)
-    data["num_vehicles"] = 5
-    data["depot"] = 35
+    data["num_vehicles"] = 2
+    data["depot"] = 23
     return data
 
 def get_solution(data, manager, routing, solution):
@@ -203,23 +204,28 @@ BBOX = (
 )
 lnd.plotTraps(
     fig, ax, 
-    zorders=(30, 25), size=750, transparencyHex='99', proj=PROJ
+    zorders=(30, 25), size=600, transparencyHex='BB', proj=PROJ
 )
 (fig, ax) = ox.plot_footprints(
     BLD, ax=ax, save=False, show=False, close=False,
     bgcolor=STYLE_BG['color'], color=STYLE_BD['color'], 
-    alpha=STYLE_BD['alpha']*1.5
+    alpha=.75# STYLE_BD['alpha']*1.5
 )
 # (fig, ax) = ox.plot_footprints(
 #     BLD, ax=ax, save=False, show=False, close=False,
 #     bgcolor=STYLE_BG['color'], alpha=0.5,
 #     color=list(BLD['cluster_color']), 
 # )
-for ix in range(TRPS_NUM):
-    ax.text(
-        trpCds[0][ix], trpCds[1][ix], ix, 
-        fontsize=10, ha='center', va='center', zorder=50
-    )
+depot = trapsLocs.iloc[data['depot']]
+ax.plot(
+    depot['lon'], depot['lat'], 
+    marker="D", ms=25, mew=2, color='#ff006e88', mec='#ffffff'
+)
+# for ix in range(TRPS_NUM):
+#     ax.text(
+#         trpCds[0][ix], trpCds[1][ix], ix, 
+#         fontsize=10, ha='center', va='center', zorder=50
+#     )
 if ALL_ROUTES:
     for route in rMat:
         for r in route:
@@ -242,7 +248,7 @@ srv.plotClean(fig, ax, bbox=BBOX)
 ax.set_facecolor(STYLE_BG['color'])
 ax.text(
     0.075, 0.075,
-    f'Fitness: {fitness:.2f}\nRoutes Total: {SOL_LENGTH/3:.2f} km', 
+    f'Fitness: {fitness:.2f}\nRoutes Total: {SOL_LENGTH/3:.0f} km', 
     transform=ax.transAxes, 
     horizontalalignment='left', verticalalignment='bottom', 
     color=STYLE_TX['color'], fontsize=15,
@@ -254,3 +260,4 @@ fig.savefig(
     bbox_inches='tight', pad_inches=PAD, dpi=DPI
 )
 # plt.close('all')
+ 
