@@ -29,6 +29,11 @@ def userPaths(user):
             '/home/sanchez.hmsc/MGSurvE_Africa/', 
             '/home/sanchez.hmsc/MGSurvE_Africa/'
         )
+    elif user=='lab':
+        (DTA_ROOT, SIM_ROOT) = (
+            '/Users/sanchez.hmsc/Documents/WorkSims/MGSurvE_DA/Africa/', 
+            '/Users/sanchez.hmsc/Documents/WorkSims/MGSurvE_DA/Africa/'
+        )
     return {'data': DTA_ROOT, 'sim': SIM_ROOT}
 
 

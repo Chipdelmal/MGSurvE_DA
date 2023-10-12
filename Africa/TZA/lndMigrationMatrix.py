@@ -19,7 +19,7 @@ import auxiliary as aux
 import constants as cst
 ox.settings.log_console=False
 ox.settings.use_cache=True
-matplotlib.rc('font', family='Ubuntu Condensed')
+# matplotlib.rc('font', family='Ubuntu Condensed')
 
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS) = (
