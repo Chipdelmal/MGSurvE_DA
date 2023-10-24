@@ -30,8 +30,8 @@ from PIL import Image
 
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = (
-        'sami', 'Tanzania', 'TZA', 
-        'Mwanza', (-2.5195,32.9046), 1000, 40, 0
+        'zelda', 'Tanzania', 'TZA', 
+        'Mwanza', (-2.5195,32.9046), 1000, 50, 0
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = argv[1:]
@@ -80,7 +80,6 @@ fNameBase = '{}-{:04d}_{:04d}-{:02d}'.format(COMMUNE, SITES_NUM, TRPS_NUM, REP)
 ###############################################################################
 # Examine landscape
 ###############################################################################
-(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
 (PAD, DPI) = (0, 250)
 lnd.updateTrapsRadii([1])
 bbox = lnd.getBoundingBox()
@@ -123,8 +122,8 @@ rMat = aux.routeMatrix(G, nNodes)
 def create_data_model():
     data = {}
     data["distance_matrix"] = dMat.astype(int)
-    data["num_vehicles"] = 2
-    data["depot"] = 23
+    data["num_vehicles"] = 5
+    data["depot"] = 40
     return data
 
 def get_solution(data, manager, routing, solution):
@@ -187,6 +186,7 @@ SOL_LENGTH = np.sum([
 ###############################################################################
 # Plot Landscape
 ###############################################################################
+(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_D
 ALL_ROUTES = False
 (FIG_SIZE, PROJ, BSCA) = ((15, 15), ccrs.PlateCarree(), 0.001)
 BBOX = (
@@ -204,7 +204,8 @@ BBOX = (
 )
 lnd.plotTraps(
     fig, ax, 
-    zorders=(30, 25), size=600, transparencyHex='BB', proj=PROJ
+    size=250, transparencyHex='CC',
+    zorders=(30, 25), proj=PROJ
 )
 lnd.plotLandBoundary(
     fig, ax,  
@@ -213,7 +214,7 @@ lnd.plotLandBoundary(
 (fig, ax) = ox.plot_footprints(
     BLD, ax=ax, save=False, show=False, close=False,
     bgcolor=STYLE_BG['color'], color=STYLE_BD['color'], 
-    alpha=.75# STYLE_BD['alpha']*1.5
+    alpha=STYLE_BD['alpha']
 )
 # (fig, ax) = ox.plot_footprints(
 #     BLD, ax=ax, save=False, show=False, close=False,
@@ -223,7 +224,9 @@ lnd.plotLandBoundary(
 depot = trapsLocs.iloc[data['depot']]
 ax.plot(
     depot['lon'], depot['lat'], 
-    marker="D", ms=25, mew=2, color='#ff006e88', mec='#ffffff'
+    marker="D", ms=15, mew=2, 
+    color='#f72585FF', mec='#ffffff',
+    zorder=100
 )
 # for ix in range(TRPS_NUM):
 #     ax.text(
@@ -250,14 +253,14 @@ else:
             )
 srv.plotClean(fig, ax, bbox=BBOX)
 ax.set_facecolor(STYLE_BG['color'])
-ax.text(
-    0.075, 0.075,
-    f'Fitness: {fitness:.2f}\nRoutes Total: {SOL_LENGTH/3:.0f} km', 
-    transform=ax.transAxes, 
-    horizontalalignment='left', verticalalignment='bottom', 
-    color=STYLE_TX['color'], fontsize=15,
-    alpha=0.75
-)
+# ax.text(
+#     0.05, 0.05,
+#     f'Fitness: {fitness:.2f}\nRoutes Total: {SOL_LENGTH/1e3:.0f} km', 
+#     transform=ax.transAxes, 
+#     horizontalalignment='left', verticalalignment='bottom', 
+#     color=STYLE_BD['color'], fontsize=15,
+#     alpha=0.75
+# )
 fig.savefig(
     path.join(paths['data'], CODE, fNameBase+'_RTE'), 
     transparent=False, facecolor=STYLE_BG['color'],
