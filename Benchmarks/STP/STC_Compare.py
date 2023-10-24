@@ -90,13 +90,14 @@ for (ix, k) in enumerate(minsDict.keys()):
         [int(k)]*len(optsDict[k]), optsDict[k], 
         # color=CLRS[(ix)%len(CLRS)], 
         color=CMAP(np.interp(ix, (0, len(SIDS)), (0, 1))),
-        alpha=0.2, lw=1.25, s=2.5, marker='o', zorder=10
+        alpha=0.1, lw=1.25, s=2.5, marker='o', zorder=10
     )
     ax.vlines(
         int(k), YRAN[0], YRAN[1],
         color='#00000022', lw=0.35
     )
-ax.set_xlim(0, 240) # max([int(i) for i in minsDict.keys()])+10)
+# plt.yscale('symlog')
+ax.set_xlim(0, 236) # max([int(i) for i in minsDict.keys()])+10)
 ax.set_ylim(*YRAN)
 ax.set_xlabel('Number of clusters (aggregation)')
 ax.set_ylabel('Time to trap')

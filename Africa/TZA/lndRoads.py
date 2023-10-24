@@ -17,28 +17,29 @@ import compress_pickle as pkl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from numpy.random import uniform
 import MGSurvE as srv
 import routing as rte
 import auxiliary as aux
 import constants as cst
 # matplotlib.use('agg')
+# ox.config(use_cache=True, log_console=False)
 
 if srv.isNotebook():
-    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = (
-        'sami', 'Tanzania', 'TZA', 
-        'Kisesa', (-2.5563,33.0470), 2750, 40, 0
+    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP, DIST) = (
+        'zelda', 'Tanzania', 'TZA', 
+        'Mwanza', (-2.5195,32.9046), 1000, 50, 0, 5000
     )
 else:
-    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = argv[1:]
+    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP, DIST) = argv[1:]
     (COORDS, GENS, FRACTION, REP) = (
         tuple(map(float, COORDS.split(','))),
         int(GENS), int(TRPS_NUM), int(REP)
     )
-(PROJ, FOOTPRINT, OVW, VERBOSE) = (
+(PROJ, FOOTPRINT, OVW, VERBOSE, WATER) = (
     ccrs.PlateCarree(), True, 
     {'dist': False, 'kernel': False},
-    False
+    False,
+    True
 )
 ###############################################################################
 # Set Paths
@@ -55,6 +56,7 @@ paths = aux.userPaths(USR)
     path.join(paths['data'], CODE, COMMUNE+'_LND.bz'),
     path.join(paths['data'], CODE, COMMUNE+'_LND.bz')
 )
+pthWtr = path.join(paths['data'], CODE, COMMUNE+'_WTR.bz')
 ###############################################################################
 # Read from Disk
 ###############################################################################
@@ -66,6 +68,17 @@ paths = aux.userPaths(USR)
     pkl.load(path.join(paths['data'], CODE, COMMUNE+'_AGG.bz')),
     pd.read_csv(pthAct)
 )
+if WATER:
+    try:
+        WTR = pkl.load(pthWtr)
+    except:
+        WTR = ox.geometries.geometries_from_point(
+            COORDS, dist=DIST, tags={"natural": "water"}
+        )
+        pkl.dump(
+            WTR, path.join(paths['data'], CODE, COMMUNE+'_WTR'), 
+            compression='bz2'
+        )
 # Get filename and create out folder ------------------------------------------
 SITES_NUM = LAG.shape[0]
 fNameBase = '{}-{:04d}_{:04d}-{:02d}'.format(COMMUNE, SITES_NUM, TRPS_NUM, REP)
@@ -76,6 +89,7 @@ fNameBase = '{}-{:04d}_{:04d}-{:02d}'.format(COMMUNE, SITES_NUM, TRPS_NUM, REP)
 ###############################################################################
 # Examine landscape
 ###############################################################################
+(PAD, DPI) = (0, 250)
 lnd.updateTrapsRadii([1])
 bbox = lnd.getBoundingBox()
 trpMsk = srv.genFixedTrapsMask(lnd.trapsFixed)
@@ -114,7 +128,26 @@ rMat = rte.routeMatrix(G, nNodes)
 ###############################################################################
 # Optimize
 ###############################################################################
-data = rte.generateDataModel(dMat, vehiclesNumber=4, depot=35)
+def create_data_model():
+    data = {}
+    data["distance_matrix"] = dMat.astype(int)
+    data["num_vehicles"] = 1
+    data["depot"] = 40
+    return data
+
+def get_solution(data, manager, routing, solution):
+    routes = []
+    for vehicle_id in range(data["num_vehicles"]):
+        index = routing.Start(vehicle_id)
+        route = []
+        while not routing.IsEnd(index):
+            route.append(manager.IndexToNode(index))
+            index = solution.Value(routing.NextVar(index))
+        route = route + [route[0]]
+        routes.append(route)
+    return routes
+
+data = create_data_model()
 manager = pywrapcp.RoutingIndexManager(
     len(data["distance_matrix"]), data["num_vehicles"], data["depot"]
 )
@@ -144,6 +177,7 @@ OSOL = rte.getSolution(data, manager, routing, solution)
 ###############################################################################
 # Plot Landscape
 ###############################################################################
+(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_D
 ALL_ROUTES = False
 (PAD, DPI) = (0, 250)
 (STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
@@ -159,16 +193,29 @@ BBOX = (
 (fig, ax) = ox.plot_graph(
     G, ax, node_size=0, figsize=(40, 40), show=False,
     bgcolor=STYLE_BG['color'], edge_color=STYLE_RD['color'], 
-    edge_alpha=STYLE_RD['alpha']*1, edge_linewidth=STYLE_RD['width']
+    edge_alpha=STYLE_RD['alpha'], edge_linewidth=STYLE_RD['width']
 )
+# ax.text(
+#     0.05, 0.05,
+#     f'Fitness: {fitness:.2f}\nRoutes Total: {SOL_LENGTH/1e3:.0f} km', 
+#     transform=ax.transAxes, 
+#     horizontalalignment='left', verticalalignment='bottom', 
+#     color=STYLE_BD['color'], fontsize=15,
+#     alpha=0.75
+# )
 lnd.plotTraps(
     fig, ax, 
-    zorders=(30, 25), size=600, transparencyHex='BB', proj=PROJ
+    size=250, transparencyHex='CC',
+    zorders=(30, 25), proj=PROJ
+)
+lnd.plotLandBoundary(
+    fig, ax,  
+    landTuples=(('10m', '#dfe7fd99', 30), ('10m', '#ffffffDD', 5))
 )
 (fig, ax) = ox.plot_footprints(
     BLD, ax=ax, save=False, show=False, close=False,
     bgcolor=STYLE_BG['color'], color=STYLE_BD['color'], 
-    alpha=.75# STYLE_BD['alpha']*1.5
+    alpha=STYLE_BD['alpha']
 )
 # (fig, ax) = ox.plot_footprints(
 #     BLD, ax=ax, save=False, show=False, close=False,
@@ -178,7 +225,9 @@ lnd.plotTraps(
 depot = trapsLocs.iloc[data['depot']]
 ax.plot(
     depot['lon'], depot['lat'], 
-    marker="D", ms=25, mew=2, color='#ff006e88', mec='#ffffff'
+    marker="D", ms=15, mew=2, 
+    color='#f72585FF', mec='#ffffff',
+    zorder=100
 )
 for ix in range(TRPS_NUM):
     ax.text(
@@ -201,18 +250,14 @@ else:
                 G, route, ax=ax, save=False, show=False, close=False,
                 route_color=cst.RCOLORS[ix], route_linewidth=4, 
                 node_size=0, node_alpha=0, bgcolor='#00000000', 
-                route_alpha=0.65 
+                route_alpha=0.6
             )
+if WATER:
+    ax = WTR.plot(
+        ax=ax, fc='#3C78BB77', markersize=0
+    )
 srv.plotClean(fig, ax, bbox=BBOX)
 ax.set_facecolor(STYLE_BG['color'])
-ax.text(
-    0.05, 0.05,
-    f'Fitness: {fitness:.2f}\nRoutes Total: {SOL_LENGTH/1e3:.0f} km', 
-    transform=ax.transAxes, 
-    horizontalalignment='left', verticalalignment='bottom', 
-    color=STYLE_BD['color'], fontsize=15,
-    alpha=0.75
-)
 fig.savefig(
     path.join(paths['data'], CODE, fNameBase+'_RTE'), 
     transparent=False, facecolor=STYLE_BG['color'],

@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-CORES = 8
+CORES = 20
 ###############################################################################
 # Load libraries and limit cores
 ###############################################################################
@@ -31,15 +31,16 @@ import constants as cst
 
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = (
-        'sami', 'Tanzania', 'TZA', 
-        'Mwanza', (-2.5195,32.9046), 1000, 30, 0
+        'zelda', 'Tanzania', 'TZA', 
+        'Mwanza', (-2.5160,32.92456), 1000, 50, 0
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = argv[1:]
-    (COORDS, GENS, FRACTION, REP) = (
+    (COORDS, GENS, TRPS_NUM, REP) = (
         tuple(map(float, COORDS.split(','))),
         int(GENS), int(TRPS_NUM), int(REP)
     )
+    COORDS = (-2.5160,32.92456)
 (PROJ, FOOTPRINT, OVW, VERBOSE) = (
     ccrs.PlateCarree(), True, 
     {'dist': False, 'kernel': False},
