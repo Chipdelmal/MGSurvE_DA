@@ -31,8 +31,8 @@ CLUSTER_PALETTE_MAPPED = {
 }
 
 RCOLORS = (
-    '#B36FA0', '#02AD9A', '#E16D5D', '#89C074', 
-    '#E84E73', '#C8C4E4', '#6F566B', '#FF9293'
+    '#02AD9A', '#B36FA0', '#E16D5D', '#E84E73', '#C8C4E4', 
+    '#89C074', '#6F566B', '#FF9293', '#1541AE', '#9DB4AF'
 )
 
 # CLUSTER_PALETTE = (
@@ -86,8 +86,8 @@ STYLE_GD_D = {'color': '#9BBFCE', 'alpha': 0.5, 'width': 0.5, 'step': 0.01, 'ran
 STYLE_BG_D = {'color': '#F0E6D9'}
 STYLE_TX_D = {'color': '#faf9f9', 'size': 40}
 STYLE_CN_D = {'color': '#faf9f9', 'alpha': 0.20, 'size': 200}
-STYLE_BD_D = {'color': '#6F566B', 'alpha': 0.300}
-STYLE_RD_D = {'color': '#58586B', 'alpha': 0.200, 'width': 0.75}
+STYLE_BD_D = {'color': '#75393E', 'alpha': 0.250}
+STYLE_RD_D = {'color': '#58586B', 'alpha': 0.150, 'width': 0.75}
 MAP_STYLE_D = (
     STYLE_GD_D, STYLE_BG_D, STYLE_TX_D, STYLE_CN_D, STYLE_BD_D, STYLE_RD_D
 )

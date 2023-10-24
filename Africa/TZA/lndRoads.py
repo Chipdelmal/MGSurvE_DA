@@ -4,9 +4,6 @@
 ###############################################################################
 # Load libraries and limit cores
 ###############################################################################
-import os
-import math
-import subprocess
 import osmnx as ox
 from os import path
 from sys import argv
@@ -17,32 +14,31 @@ from ortools.constraint_solver import pywrapcp
 from engineering_notation import EngNumber
 import cartopy.crs as ccrs
 import compress_pickle as pkl
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from numpy.random import uniform
 import MGSurvE as srv
 import auxiliary as aux
 import constants as cst
-from PIL import Image
 # matplotlib.use('agg')
+# ox.config(use_cache=True, log_console=False)
 
 if srv.isNotebook():
-    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = (
+    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP, DIST) = (
         'zelda', 'Tanzania', 'TZA', 
-        'Mwanza', (-2.5195,32.9046), 1000, 50, 0
+        'Mwanza', (-2.5195,32.9046), 1000, 50, 0, 5000
     )
 else:
-    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = argv[1:]
+    (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP, DIST) = argv[1:]
     (COORDS, GENS, FRACTION, REP) = (
         tuple(map(float, COORDS.split(','))),
         int(GENS), int(TRPS_NUM), int(REP)
     )
-(PROJ, FOOTPRINT, OVW, VERBOSE) = (
+(PROJ, FOOTPRINT, OVW, VERBOSE, WATER) = (
     ccrs.PlateCarree(), True, 
     {'dist': False, 'kernel': False},
-    False
+    False,
+    True
 )
 ###############################################################################
 # Set Paths
@@ -59,6 +55,7 @@ paths = aux.userPaths(USR)
     path.join(paths['data'], CODE, COMMUNE+'_LND.bz'),
     path.join(paths['data'], CODE, COMMUNE+'_LND.bz')
 )
+pthWtr = path.join(paths['data'], CODE, COMMUNE+'_WTR.bz')
 ###############################################################################
 # Read from Disk
 ###############################################################################
@@ -70,6 +67,17 @@ paths = aux.userPaths(USR)
     pkl.load(path.join(paths['data'], CODE, COMMUNE+'_AGG.bz')),
     pd.read_csv(pthAct)
 )
+if WATER:
+    try:
+        WTR = pkl.load(pthWtr)
+    except:
+        WTR = ox.geometries.geometries_from_point(
+            COORDS, dist=DIST, tags={"natural": "water"}
+        )
+        pkl.dump(
+            WTR, path.join(paths['data'], CODE, COMMUNE+'_WTR'), 
+            compression='bz2'
+        )
 # Get filename and create out folder ------------------------------------------
 SITES_NUM = LAG.shape[0]
 fNameBase = '{}-{:04d}_{:04d}-{:02d}'.format(COMMUNE, SITES_NUM, TRPS_NUM, REP)
@@ -122,7 +130,7 @@ rMat = aux.routeMatrix(G, nNodes)
 def create_data_model():
     data = {}
     data["distance_matrix"] = dMat.astype(int)
-    data["num_vehicles"] = 5
+    data["num_vehicles"] = 1
     data["depot"] = 40
     return data
 
@@ -200,8 +208,16 @@ BBOX = (
 (fig, ax) = ox.plot_graph(
     G, ax, node_size=0, figsize=(40, 40), show=False,
     bgcolor=STYLE_BG['color'], edge_color=STYLE_RD['color'], 
-    edge_alpha=STYLE_RD['alpha']*.6, edge_linewidth=STYLE_RD['width']
+    edge_alpha=STYLE_RD['alpha'], edge_linewidth=STYLE_RD['width']
 )
+# ax.text(
+#     0.05, 0.05,
+#     f'Fitness: {fitness:.2f}\nRoutes Total: {SOL_LENGTH/1e3:.0f} km', 
+#     transform=ax.transAxes, 
+#     horizontalalignment='left', verticalalignment='bottom', 
+#     color=STYLE_BD['color'], fontsize=15,
+#     alpha=0.75
+# )
 lnd.plotTraps(
     fig, ax, 
     size=250, transparencyHex='CC',
@@ -249,18 +265,14 @@ else:
                 G, route, ax=ax, save=False, show=False, close=False,
                 route_color=cst.RCOLORS[ix], route_linewidth=4, 
                 node_size=0, node_alpha=0, bgcolor='#00000000', 
-                route_alpha=0.65
+                route_alpha=0.6
             )
+if WATER:
+    ax = WTR.plot(
+        ax=ax, fc='#3C78BB77', markersize=0
+    )
 srv.plotClean(fig, ax, bbox=BBOX)
 ax.set_facecolor(STYLE_BG['color'])
-# ax.text(
-#     0.05, 0.05,
-#     f'Fitness: {fitness:.2f}\nRoutes Total: {SOL_LENGTH/1e3:.0f} km', 
-#     transform=ax.transAxes, 
-#     horizontalalignment='left', verticalalignment='bottom', 
-#     color=STYLE_BD['color'], fontsize=15,
-#     alpha=0.75
-# )
 fig.savefig(
     path.join(paths['data'], CODE, fNameBase+'_RTE'), 
     transparent=False, facecolor=STYLE_BG['color'],
