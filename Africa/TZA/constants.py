@@ -51,7 +51,7 @@ STYLE_BG_B = {'color': '#ffffff'}
 STYLE_TX_B = {'color': '#cae9ff', 'size': 40}
 STYLE_CN_B = {'color': '#3d405b', 'alpha': 0.20, 'size': 200}
 STYLE_BD_B = {'color': '#3d405b', 'alpha': 0.900}
-STYLE_RD_B = {'color': '#3d405b', 'alpha': 0.025, 'width': 1.25}
+STYLE_RD_B = {'color': '#3d405b', 'alpha': 0.125, 'width': 1.25}
 MAP_STYLE_B = (
     STYLE_GD_B, STYLE_BG_B, STYLE_TX_B, STYLE_CN_B, STYLE_BD_B, STYLE_RD_B
 )
@@ -64,7 +64,7 @@ STYLE_GD_C = {'color': '#8da9c4', 'alpha': 0.35, 'width': 0.5, 'step': 0.01, 'ra
 STYLE_BG_C = {'color': '#FFFFFF'}
 STYLE_TX_C = {'color': '#3d405b', 'size': 40}
 STYLE_CN_C = {'color': '#3d405b', 'alpha': 0.20, 'size': 200}
-STYLE_BD_C = {'color': '#304c89', 'alpha': 0.30}
+STYLE_BD_C = {'color': '#7678ed', 'alpha': 0.25}
 STYLE_RD_C = {'color': '#292f36', 'alpha': 0.5, 'width': 0.25}
 MAP_STYLE_C = (
     STYLE_GD_C, STYLE_BG_C, STYLE_TX_C, STYLE_CN_C, STYLE_BD_C, STYLE_RD_C

@@ -4,9 +4,6 @@
 ###############################################################################
 # Load libraries and limit cores
 ###############################################################################
-import os
-import math
-import subprocess
 import osmnx as ox
 from os import path
 from sys import argv
@@ -17,21 +14,20 @@ from ortools.constraint_solver import pywrapcp
 from engineering_notation import EngNumber
 import cartopy.crs as ccrs
 import compress_pickle as pkl
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from numpy.random import uniform
 import MGSurvE as srv
+import routing as rte
 import auxiliary as aux
 import constants as cst
-from PIL import Image
 # matplotlib.use('agg')
 
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = (
         'sami', 'Tanzania', 'TZA', 
-        'Mwanza', (-2.5195,32.9046), 1000, 40, 0
+        'Kisesa', (-2.5563,33.0470), 2750, 40, 0
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP) = argv[1:]
@@ -80,8 +76,6 @@ fNameBase = '{}-{:04d}_{:04d}-{:02d}'.format(COMMUNE, SITES_NUM, TRPS_NUM, REP)
 ###############################################################################
 # Examine landscape
 ###############################################################################
-(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
-(PAD, DPI) = (0, 250)
 lnd.updateTrapsRadii([1])
 bbox = lnd.getBoundingBox()
 trpMsk = srv.genFixedTrapsMask(lnd.trapsFixed)
@@ -114,32 +108,13 @@ lengths = [
     nx.shortest_path_length(G=G, source=cNode, target=node, weight='length')
     for node in nNodes
 ]
-dMat = aux.routeDistances(G, trpCds[0], trpCds[1])
-rMat = aux.routeMatrix(G, nNodes)
+dMat = rte.routeDistances(G, trpCds[0], trpCds[1])
+rMat = rte.routeMatrix(G, nNodes)
 # plt.matshow(dMat)
 ###############################################################################
 # Optimize
 ###############################################################################
-def create_data_model():
-    data = {}
-    data["distance_matrix"] = dMat.astype(int)
-    data["num_vehicles"] = 2
-    data["depot"] = 23
-    return data
-
-def get_solution(data, manager, routing, solution):
-    routes = []
-    for vehicle_id in range(data["num_vehicles"]):
-        index = routing.Start(vehicle_id)
-        route = []
-        while not routing.IsEnd(index):
-            route.append(manager.IndexToNode(index))
-            index = solution.Value(routing.NextVar(index))
-        route = route + [route[0]]
-        routes.append(route)
-    return routes
-
-data = create_data_model()
+data = rte.generateDataModel(dMat, vehiclesNumber=4, depot=35)
 manager = pywrapcp.RoutingIndexManager(
     len(data["distance_matrix"]), data["num_vehicles"], data["depot"]
 )
@@ -149,45 +124,29 @@ def distance_callback(from_index, to_index):
     to_node = manager.IndexToNode(to_index)
     return data["distance_matrix"][from_node][to_node]
 
-transit_callback_index = routing.RegisterTransitCallback(distance_callback)
-routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
-dimension_name = "Distance"
-routing.AddDimension(
-    transit_callback_index,
-    0,  # no slack
-    100000,  # vehicle maximum travel distance
-    True,  # start cumul to zero
-    dimension_name,
-)
-distance_dimension = routing.GetDimensionOrDie(dimension_name)
+transitCallbackIx = routing.RegisterTransitCallback(distance_callback)
+routing.SetArcCostEvaluatorOfAllVehicles(transitCallbackIx)
+(slack, maxDistance, cumulZero, dimName) = (0, int(1e5), True, "Distance")
+routing.AddDimension(transitCallbackIx, slack, maxDistance, cumulZero, dimName)
+distance_dimension = routing.GetDimensionOrDie(dimName)
 distance_dimension.SetGlobalSpanCostCoefficient(100)
 search_parameters = pywrapcp.DefaultRoutingSearchParameters()
 search_parameters.first_solution_strategy = (
     routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
 )
 solution = routing.SolveWithParameters(search_parameters)
-aux.print_solution(data, manager, routing, solution)
-OSOL = get_solution(data, manager, routing, solution)
-SOL_ROUTES = []
-for j in range(data["num_vehicles"]):
-    rtes = [
-        ox.shortest_path(G, nNodes[OSOL[j][i]], nNodes[OSOL[j][i+1]], weight='length')
-        for i in range(len(OSOL[j])-1)
-    ]
-    SOL_ROUTES.append(rtes)
-SOL_LENGTH = np.sum([
-    np.sum([
-        nx.shortest_path_length(
-            G=G, source=nNodes[OSOL[j][i]], target=nNodes[OSOL[j][i+1]], 
-            weight='length'
-        )
-        for i in range(len(OSOL[j])-1)
-    ]) for j in range(data["num_vehicles"])
-])
+rte.print_solution(data, manager, routing, solution)
+OSOL = rte.getSolution(data, manager, routing, solution)
+(SOL_ROUTES, SOL_LENGTH) = (
+    rte.ortoolToOsmnxRoute(data, G, OSOL, nNodes),
+    rte.ortoolToOsmnxLength(data, G, OSOL, nNodes)
+)
 ###############################################################################
 # Plot Landscape
 ###############################################################################
 ALL_ROUTES = False
+(PAD, DPI) = (0, 250)
+(STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_A
 (FIG_SIZE, PROJ, BSCA) = ((15, 15), ccrs.PlateCarree(), 0.001)
 BBOX = (
     (lnd.landLimits[0][0]-BSCA, lnd.landLimits[0][1]+BSCA),
@@ -200,7 +159,7 @@ BBOX = (
 (fig, ax) = ox.plot_graph(
     G, ax, node_size=0, figsize=(40, 40), show=False,
     bgcolor=STYLE_BG['color'], edge_color=STYLE_RD['color'], 
-    edge_alpha=STYLE_RD['alpha']*.6, edge_linewidth=STYLE_RD['width']
+    edge_alpha=STYLE_RD['alpha']*1, edge_linewidth=STYLE_RD['width']
 )
 lnd.plotTraps(
     fig, ax, 
@@ -221,11 +180,11 @@ ax.plot(
     depot['lon'], depot['lat'], 
     marker="D", ms=25, mew=2, color='#ff006e88', mec='#ffffff'
 )
-# for ix in range(TRPS_NUM):
-#     ax.text(
-#         trpCds[0][ix], trpCds[1][ix], ix, 
-#         fontsize=10, ha='center', va='center', zorder=50
-#     )
+for ix in range(TRPS_NUM):
+    ax.text(
+        trpCds[0][ix], trpCds[1][ix], ix, 
+        fontsize=10, ha='center', va='center', zorder=50
+    )
 if ALL_ROUTES:
     for route in rMat:
         for r in route:
@@ -242,16 +201,16 @@ else:
                 G, route, ax=ax, save=False, show=False, close=False,
                 route_color=cst.RCOLORS[ix], route_linewidth=4, 
                 node_size=0, node_alpha=0, bgcolor='#00000000', 
-                route_alpha=0.65
+                route_alpha=0.65 
             )
 srv.plotClean(fig, ax, bbox=BBOX)
 ax.set_facecolor(STYLE_BG['color'])
 ax.text(
-    0.075, 0.075,
-    f'Fitness: {fitness:.2f}\nRoutes Total: {SOL_LENGTH/3:.0f} km', 
+    0.05, 0.05,
+    f'Fitness: {fitness:.2f}\nRoutes Total: {SOL_LENGTH/1e3:.0f} km', 
     transform=ax.transAxes, 
     horizontalalignment='left', verticalalignment='bottom', 
-    color=STYLE_TX['color'], fontsize=15,
+    color=STYLE_BD['color'], fontsize=15,
     alpha=0.75
 )
 fig.savefig(
@@ -260,4 +219,5 @@ fig.savefig(
     bbox_inches='tight', pad_inches=PAD, dpi=DPI
 )
 # plt.close('all')
- 
+
+STYLE_BD['color']
