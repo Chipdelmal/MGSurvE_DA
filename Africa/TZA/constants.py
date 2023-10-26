@@ -87,7 +87,7 @@ STYLE_BG_D = {'color': '#F0E6D9'}
 STYLE_TX_D = {'color': '#faf9f9', 'size': 40}
 STYLE_CN_D = {'color': '#faf9f9', 'alpha': 0.20, 'size': 200}
 STYLE_BD_D = {'color': '#75393E', 'alpha': 0.250}
-STYLE_RD_D = {'color': '#58586B', 'alpha': 0.150, 'width': 0.75}
+STYLE_RD_D = {'color': '#58586B', 'alpha': 0.200, 'width': 0.5}
 MAP_STYLE_D = (
     STYLE_GD_D, STYLE_BG_D, STYLE_TX_D, STYLE_CN_D, STYLE_BD_D, STYLE_RD_D
 )

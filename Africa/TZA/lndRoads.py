@@ -1,5 +1,11 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
+###############################################################################
+# Sims:
+#   https://github.com/Chipdelmal/MGDrivE/blob/master/Main/ReplacementTPP/sims-bf-server-high.R#L566-L581
+#   https://github.com/Chipdelmal/MGDrivE/blob/master/Main/ReplacementTPP/sims-kenya-server-low.R#L562-L577
+###############################################################################
+
 
 ###############################################################################
 # Load libraries and limit cores
@@ -130,8 +136,8 @@ rMat = aux.routeMatrix(G, nNodes)
 def create_data_model():
     data = {}
     data["distance_matrix"] = dMat.astype(int)
-    data["num_vehicles"] = 1
-    data["depot"] = 40
+    data["num_vehicles"] = 4
+    data["depot"] = 3
     return data
 
 def get_solution(data, manager, routing, solution):
@@ -196,6 +202,7 @@ SOL_LENGTH = np.sum([
 ###############################################################################
 (STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_D
 ALL_ROUTES = False
+IDS = False
 (FIG_SIZE, PROJ, BSCA) = ((15, 15), ccrs.PlateCarree(), 0.001)
 BBOX = (
     (lnd.landLimits[0][0]-BSCA, lnd.landLimits[0][1]+BSCA),
@@ -210,14 +217,14 @@ BBOX = (
     bgcolor=STYLE_BG['color'], edge_color=STYLE_RD['color'], 
     edge_alpha=STYLE_RD['alpha'], edge_linewidth=STYLE_RD['width']
 )
-# ax.text(
-#     0.05, 0.05,
-#     f'Fitness: {fitness:.2f}\nRoutes Total: {SOL_LENGTH/1e3:.0f} km', 
-#     transform=ax.transAxes, 
-#     horizontalalignment='left', verticalalignment='bottom', 
-#     color=STYLE_BD['color'], fontsize=15,
-#     alpha=0.75
-# )
+ax.text(
+    0.05, 0.05,
+    f'Fitness: {fitness:.2f}\nRoute: {SOL_LENGTH/1e3:.0f} km', 
+    transform=ax.transAxes, 
+    horizontalalignment='left', verticalalignment='bottom', 
+    color=STYLE_BD['color'], fontsize=15,
+    alpha=0.75
+)
 lnd.plotTraps(
     fig, ax, 
     size=250, transparencyHex='CC',
@@ -244,11 +251,13 @@ ax.plot(
     color='#f72585FF', mec='#ffffff',
     zorder=100
 )
-# for ix in range(TRPS_NUM):
-#     ax.text(
-#         trpCds[0][ix], trpCds[1][ix], ix, 
-#         fontsize=10, ha='center', va='center', zorder=50
-#     )
+if IDS:
+    for ix in range(TRPS_NUM):
+        ax.text(
+            trpCds[0][ix], trpCds[1][ix], ix, 
+            fontsize=20, ha='center', va='center', zorder=150,
+            color=STYLE_BD['color']
+        )
 if ALL_ROUTES:
     for route in rMat:
         for r in route:
@@ -263,7 +272,7 @@ else:
         for route in vehicle:
             (fig, ax) = ox.plot_graph_route(
                 G, route, ax=ax, save=False, show=False, close=False,
-                route_color=cst.RCOLORS[ix], route_linewidth=4, 
+                route_color=cst.RCOLORS[ix], route_linewidth=5, 
                 node_size=0, node_alpha=0, bgcolor='#00000000', 
                 route_alpha=0.6
             )
@@ -279,4 +288,3 @@ fig.savefig(
     bbox_inches='tight', pad_inches=PAD, dpi=DPI
 )
 # plt.close('all')
- 
