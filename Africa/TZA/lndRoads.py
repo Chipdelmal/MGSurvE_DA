@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import MGSurvE as srv
+import routing as rte
 import auxiliary as aux
 import constants as cst
 # matplotlib.use('agg')
@@ -127,8 +128,8 @@ lengths = [
     nx.shortest_path_length(G=G, source=cNode, target=node, weight='length')
     for node in nNodes
 ]
-dMat = aux.routeDistances(G, trpCds[0], trpCds[1])
-rMat = aux.routeMatrix(G, nNodes)
+dMat = rte.routeDistances(G, trpCds[0], trpCds[1])
+rMat = rte.routeMatrix(G, nNodes)
 # plt.matshow(dMat)
 ###############################################################################
 # Optimize
@@ -162,41 +163,23 @@ def distance_callback(from_index, to_index):
     to_node = manager.IndexToNode(to_index)
     return data["distance_matrix"][from_node][to_node]
 
-transit_callback_index = routing.RegisterTransitCallback(distance_callback)
-routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
-dimension_name = "Distance"
-routing.AddDimension(
-    transit_callback_index,
-    0,  # no slack
-    100000,  # vehicle maximum travel distance
-    True,  # start cumul to zero
-    dimension_name,
-)
-distance_dimension = routing.GetDimensionOrDie(dimension_name)
+transitCallbackIx = routing.RegisterTransitCallback(distance_callback)
+routing.SetArcCostEvaluatorOfAllVehicles(transitCallbackIx)
+(slack, maxDistance, cumulZero, dimName) = (0, int(1e5), True, "Distance")
+routing.AddDimension(transitCallbackIx, slack, maxDistance, cumulZero, dimName)
+distance_dimension = routing.GetDimensionOrDie(dimName)
 distance_dimension.SetGlobalSpanCostCoefficient(100)
 search_parameters = pywrapcp.DefaultRoutingSearchParameters()
 search_parameters.first_solution_strategy = (
     routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
 )
 solution = routing.SolveWithParameters(search_parameters)
-aux.print_solution(data, manager, routing, solution)
-OSOL = get_solution(data, manager, routing, solution)
-SOL_ROUTES = []
-for j in range(data["num_vehicles"]):
-    rtes = [
-        ox.shortest_path(G, nNodes[OSOL[j][i]], nNodes[OSOL[j][i+1]], weight='length')
-        for i in range(len(OSOL[j])-1)
-    ]
-    SOL_ROUTES.append(rtes)
-SOL_LENGTH = np.sum([
-    np.sum([
-        nx.shortest_path_length(
-            G=G, source=nNodes[OSOL[j][i]], target=nNodes[OSOL[j][i+1]], 
-            weight='length'
-        )
-        for i in range(len(OSOL[j])-1)
-    ]) for j in range(data["num_vehicles"])
-])
+rte.print_solution(data, manager, routing, solution)
+OSOL = rte.getSolution(data, manager, routing, solution)
+(SOL_ROUTES, SOL_LENGTH) = (
+    rte.ortoolToOsmnxRoute(data, G, OSOL, nNodes),
+    rte.ortoolToOsmnxLength(data, G, OSOL, nNodes)
+)
 ###############################################################################
 # Plot Landscape
 ###############################################################################

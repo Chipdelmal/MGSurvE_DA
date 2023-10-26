@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import osmnx as ox
 import numpy as np
 from math import exp
 import networkx as nx
