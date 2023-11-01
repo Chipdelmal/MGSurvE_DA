@@ -47,6 +47,7 @@ else:
     False,
     True
 )
+COST_PER_KM = 1.7
 ###############################################################################
 # Set Paths
 ###############################################################################
@@ -180,6 +181,7 @@ OSOL = rte.getSolution(data, manager, routing, solution)
     rte.ortoolToOsmnxRoute(data, G, OSOL, nNodes),
     rte.ortoolToOsmnxLength(data, G, OSOL, nNodes)
 )
+SOL_COST = (SOL_LENGTH)/1e3*COST_PER_KM
 ###############################################################################
 # Plot Landscape
 ###############################################################################
@@ -202,7 +204,7 @@ BBOX = (
 )
 ax.text(
     0.05, 0.05,
-    f'Fitness: {fitness:.2f}\nRoute: {SOL_LENGTH/1e3:.0f} km', 
+    f'Fitness: {fitness:.2f}\nRoute: {SOL_LENGTH/1e3:.0f} km ({SOL_COST:.0f})', 
     transform=ax.transAxes, 
     horizontalalignment='left', verticalalignment='bottom', 
     color=STYLE_BD['color'], fontsize=15,
