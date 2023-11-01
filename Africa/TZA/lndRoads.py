@@ -47,6 +47,7 @@ else:
     False,
     True
 )
+COST_PER_KM = 1.7
 ###############################################################################
 # Set Paths
 ###############################################################################
@@ -180,6 +181,7 @@ OSOL = rte.getSolution(data, manager, routing, solution)
     rte.ortoolToOsmnxRoute(data, G, OSOL, nNodes),
     rte.ortoolToOsmnxLength(data, G, OSOL, nNodes)
 )
+SOL_COST = (SOL_LENGTH)/1e3*COST_PER_KM
 ###############################################################################
 # Plot Landscape
 ###############################################################################
