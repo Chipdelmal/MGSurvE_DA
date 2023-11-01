@@ -138,7 +138,7 @@ rMat = rte.routeMatrix(G, nNodes)
 def create_data_model():
     data = {}
     data["distance_matrix"] = dMat.astype(int)
-    data["num_vehicles"] = 4
+    data["num_vehicles"] = 1
     data["depot"] = 3
     return data
 
@@ -202,14 +202,14 @@ BBOX = (
     bgcolor=STYLE_BG['color'], edge_color=STYLE_RD['color'], 
     edge_alpha=STYLE_RD['alpha'], edge_linewidth=STYLE_RD['width']
 )
-# ax.text(
-#     0.05, 0.05,
-#     f'Fitness: {fitness:.2f}\nRoute: {SOL_LENGTH/1e3:.0f} km', 
-#     transform=ax.transAxes, 
-#     horizontalalignment='left', verticalalignment='bottom', 
-#     color=STYLE_BD['color'], fontsize=15,
-#     alpha=0.75
-# )
+ax.text(
+    0.05, 0.05,
+    f'Fitness: {fitness:.2f} days\nRoute: {SOL_LENGTH/1e3:.0f} km (${SOL_COST:.0f})', 
+    transform=ax.transAxes, 
+    horizontalalignment='left', verticalalignment='bottom', 
+    color=STYLE_BD['color'], fontsize=15,
+    alpha=0.75
+)
 lnd.plotTraps(
     fig, ax, 
     size=250, transparencyHex='CC',
