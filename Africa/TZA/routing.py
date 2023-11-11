@@ -6,7 +6,7 @@ import networkx as nx
 ###############################################################################
 # Routing
 ###############################################################################
-def routeDistancesMatrix(G, nNodes):
+def routeDistancesMatrix(G, nNodes, weight='length'):
     TRPS_NUM = len(nNodes)
     dMatrix = np.zeros((TRPS_NUM, TRPS_NUM), dtype=float)
     for row in range(TRPS_NUM):
@@ -14,12 +14,12 @@ def routeDistancesMatrix(G, nNodes):
         for col in range(TRPS_NUM):
             tnode = nNodes[col]
             dMatrix[row, col] = nx.shortest_path_length(
-                G=G, source=cnode, target=tnode, weight='length'
+                G=G, source=cnode, target=tnode, weight=weight
             )
     return dMatrix
 
 
-def routeMatrix(G, nNodes):
+def routeMatrix(G, nNodes, weight='length'):
     TRPS_NUM = len(nNodes)
     dMatrix = []
     for row in range(TRPS_NUM):
@@ -28,7 +28,7 @@ def routeMatrix(G, nNodes):
         for col in range(TRPS_NUM):
             tnode = nNodes[col]
             route = nx.shortest_path(
-                G=G, source=cnode, target=tnode, weight='length'
+                G=G, source=cnode, target=tnode, weight=weight
             )
             dRow.append(route)
         dMatrix.append(dRow)

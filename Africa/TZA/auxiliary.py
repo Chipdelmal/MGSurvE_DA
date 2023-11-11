@@ -4,6 +4,7 @@
 import numpy as np
 from math import exp
 import networkx as nx
+import osmnx as ox
 from sklearn.preprocessing import normalize
 import matplotlib.colors as mcolors
 from matplotlib.colors import LinearSegmentedColormap

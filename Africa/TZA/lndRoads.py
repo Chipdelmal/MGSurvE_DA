@@ -21,6 +21,7 @@ from engineering_notation import EngNumber
 import cartopy.crs as ccrs
 import compress_pickle as pkl
 import matplotlib.pyplot as plt
+from matplotlib import cm
 import numpy as np
 import pandas as pd
 import MGSurvE as srv
@@ -33,7 +34,7 @@ import constants as cst
 if srv.isNotebook():
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP, DIST) = (
         'zelda', 'Tanzania', 'TZA', 
-        'Mwanza', (-2.5195,32.9046), 1000, 50, 0, 5000
+        'Mwanza', (-2.5195,32.9046), 1000, 50, 1, 5000
     )
 else:
     (USR, COUNTRY, CODE, COMMUNE, COORDS, GENS, TRPS_NUM, REP, DIST) = argv[1:]
@@ -121,25 +122,33 @@ fitness = log['min'].iloc[gen]
 ###############################################################################
 G = ox.project_graph(NTW, to_crs=PROJ)
 G = ox.utils_graph.get_largest_component(G, strongly=True)
-(ix, jx) = (10, 5)
-cNode = ox.nearest_nodes(G, np.mean(BLD['centroid_lon']), np.mean(BLD['centroid_lat']))
+# cNode = ox.nearest_nodes(G, np.mean(BLD['centroid_lon']), np.mean(BLD['centroid_lat']))
 (nNodes, dNodes) = ox.nearest_nodes(G, trapsLocs['lon'], trapsLocs['lat'], return_dist=True)
-routes = ox.shortest_path(G, TRPS_NUM*[cNode], nNodes, weight="length")
-lengths = [
-    nx.shortest_path_length(G=G, source=cNode, target=node, weight='length')
-    for node in nNodes
-]
+# routes = ox.shortest_path(G, TRPS_NUM*[cNode], nNodes, weight="length")
+# lengths = [
+#     nx.shortest_path_length(G=G, source=cNode, target=node, weight='length')
+#     for node in nNodes
+# ]
 dMat = rte.routeDistances(G, trpCds[0], trpCds[1])
 rMat = rte.routeMatrix(G, nNodes)
-# plt.matshow(dMat)
+
+# plt.figure(figsize=(6,6))
+# plt.matshow(dMat, cmap=cm.Purples, interpolation='none', vmin=0, vmax=10000)
+# plt.axis(False)
+# plt.grid()
+# plt.savefig(
+#     'matrix.png',
+#     transparent=False, 
+#     bbox_inches='tight', pad_inches=0, dpi=DPI
+# )
 ###############################################################################
 # Optimize
 ###############################################################################
 def create_data_model():
     data = {}
     data["distance_matrix"] = dMat.astype(int)
-    data["num_vehicles"] = 1
-    data["depot"] = 3
+    data["num_vehicles"] = 5
+    data["depot"] = 14
     return data
 
 def get_solution(data, manager, routing, solution):
@@ -188,6 +197,7 @@ SOL_COST = (SOL_LENGTH)/1e3*COST_PER_KM
 (STYLE_GD, STYLE_BG, STYLE_TX, STYLE_CN, STYLE_BD, STYLE_RD) = cst.MAP_STYLE_D
 ALL_ROUTES = False
 IDS = False
+CLUSTERS = False
 (FIG_SIZE, PROJ, BSCA) = ((15, 15), ccrs.PlateCarree(), 0.001)
 BBOX = (
     (lnd.landLimits[0][0]-BSCA, lnd.landLimits[0][1]+BSCA),
@@ -224,15 +234,16 @@ lnd.plotLandBoundary(
     bgcolor=STYLE_BG['color'], color=STYLE_BD['color'], 
     alpha=STYLE_BD['alpha']
 )
-# (fig, ax) = ox.plot_footprints(
-#     BLD, ax=ax, save=False, show=False, close=False,
-#     bgcolor=STYLE_BG['color'], alpha=0.5,
-#     color=list(BLD['cluster_color']), 
-# )
+if CLUSTERS:
+    (fig, ax) = ox.plot_footprints(
+        BLD, ax=ax, save=False, show=False, close=False,
+        bgcolor=STYLE_BG['color'], alpha=0.5,
+        color=list(BLD['cluster_color']), 
+    )
 depot = trapsLocs.iloc[data['depot']]
 ax.plot(
     depot['lon'], depot['lat'], 
-    marker="D", ms=15, mew=2, 
+    marker="D", ms=20, mew=2, 
     color='#f72585FF', mec='#ffffff',
     zorder=100
 )
